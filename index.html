@@ -49,12 +49,23 @@
     .accordion-content { padding: 0 1.5rem; max-height: 0; overflow: hidden; transition: max-height 0.3s ease-out, padding 0.3s ease; background: var(--surface); color: #ccc; }
     .accordion-content.active { padding: 1.2rem 1.5rem; max-height: 500px; border-top: 1px solid var(--border); }
 
-    /* Notepad */
-    .notepad-block { background: var(--surface); padding: 1.5rem; border-radius: 8px; border: 1px solid var(--accent); margin-bottom: 2rem; }
-    .notepad-block h2 { margin-top: 0; font-size: 1.4rem; border-bottom: 1px solid var(--border); padding-bottom: 0.5rem; margin-bottom: 1rem; color: #fff; display: flex; justify-content: space-between; align-items: center; }
-    .notepad-info { color: #aaa; font-size: 0.95rem; margin-bottom: 1rem; }
-    #shared-notes { width: 100%; height: 400px; background: #1a1a1a; color: #e0e0e0; border: 1px solid var(--border); border-radius: 6px; padding: 1rem; font-family: monospace; font-size: 1.05rem; resize: vertical; box-sizing: border-box; line-height: 1.6; }
-    #shared-notes:focus { outline: none; border-color: var(--accent); }
+    /* Ideas Feed */
+    .feed-block { background: var(--surface); padding: 1.5rem; border-radius: 8px; border: 1px solid var(--accent); margin-bottom: 2rem; }
+    .feed-block h2 { margin-top: 0; font-size: 1.4rem; border-bottom: 1px solid var(--border); padding-bottom: 0.5rem; margin-bottom: 0.5rem; color: #fff; }
+    .feed-info { color: #aaa; font-size: 0.95rem; margin-bottom: 1.2rem; }
+    .feed-input-row { display: flex; gap: 0.6rem; flex-wrap: wrap; margin-bottom: 1.2rem; }
+    .feed-input-row input[type=text] { background: #2a2a2a; border: 1px solid var(--border); color: #fff; padding: 0.75rem 1rem; border-radius: 6px; font-size: 1rem; font-family: inherit; outline: none; }
+    .feed-input-row input[type=text]:focus { border-color: var(--accent); }
+    #feed-name { width: 140px; flex-shrink: 0; }
+    #feed-idea { flex: 1; min-width: 180px; }
+    .send-btn { background: var(--accent); color: #000; border: none; padding: 0.75rem 1.5rem; border-radius: 6px; font-weight: bold; font-size: 1rem; cursor: pointer; white-space: nowrap; }
+    .send-btn:hover { opacity: 0.85; }
+    .feed-list { display: flex; flex-direction: column; gap: 0.6rem; max-height: 420px; overflow-y: auto; }
+    .feed-msg { background: #2a2a2a; border-left: 4px solid var(--accent); border-radius: 6px; padding: 0.75rem 1rem; animation: fadeIn 0.3s ease; }
+    .feed-msg .who { font-weight: bold; color: var(--accent); font-size: 0.9rem; margin-bottom: 0.25rem; }
+    .feed-msg .what { color: #e0e0e0; font-size: 1rem; line-height: 1.45; }
+    .feed-msg .when { color: #555; font-size: 0.78rem; margin-top: 0.3rem; }
+    @keyframes fadeIn { from { opacity:0; transform:translateY(-4px); } to { opacity:1; transform:translateY(0); } }
   </style>
 </head>
 <body>
@@ -229,16 +240,16 @@
     </div>
   </div>
 
-  <!-- SHARED NOTEPAD -->
-  <div class="notepad-block">
-    <h2>
-      Shared Team Workspace
-      <span class="live-indicator" style="font-size:0.8rem;">&#9679; Live &amp; Auto-Saved</span>
-    </h2>
-    <div class="notepad-info">
-      This is a shared, real-time document. Everyone can type here together. Write down our plan, assigned roles, and questions for other groups. The text is continuously saved and synced.
+  <!-- IDEAS FEED -->
+  <div class="feed-block">
+    <h2>Team Ideas &amp; Notes <span class="live-indicator" style="font-size:0.8rem;">&#9679; Live</span></h2>
+    <div class="feed-info">Type your name and your idea, then hit Send. Everyone's messages appear independently without overwriting each other. Refresh to load latest.</div>
+    <div class="feed-input-row">
+      <input type="text" id="feed-name" placeholder="Your name" maxlength="30"/>
+      <input type="text" id="feed-idea" placeholder="Type your idea or note here..." onkeydown="if(event.key==='Enter') sendIdea()"/>
+      <button class="send-btn" onclick="sendIdea()">Send</button>
     </div>
-    <textarea id="shared-notes" placeholder="Start typing the meeting notes, roles, and action items here..."></textarea>
+    <div class="feed-list" id="feed-list"></div>
   </div>
 
 </div>
@@ -256,33 +267,70 @@
     }
   }
 
-  const editor = document.getElementById('shared-notes');
-
-  // Gun.js — syncs on page load and when others write. Refresh to see latest.
+  // Gun.js — each message is stored as a separate node so nothing overwrites anything.
   const gun = Gun(['https://gun-manhattan.herokuapp.com/gun', 'https://relay.peer.ooo/gun']);
-  const doc = gun.get('g2-shared-workspace-document-v1');
+  const feed = gun.get('g2-ideas-feed-v1');
 
-  // Load localStorage immediately so content shows instantly
-  const saved = localStorage.getItem('g2-notes-backup');
-  if (saved) editor.value = saved;
+  const feedList = document.getElementById('feed-list');
+  const rendered = new Set();
 
-  // Write to Gun on input
-  editor.addEventListener('input', () => {
-    const val = editor.value;
-    localStorage.setItem('g2-notes-backup', val);
-    doc.put({ text: val });
-  });
+  function pad(n){ return String(n).padStart(2,'0'); }
 
-  // Read from Gun — fires on page load with stored value and on any peer update
-  doc.on((data) => {
-    if (data && typeof data.text === 'string' && data.text !== editor.value) {
-      const start = editor.selectionStart;
-      const end = editor.selectionEnd;
-      editor.value = data.text;
-      if (document.activeElement === editor) editor.setSelectionRange(start, end);
-      localStorage.setItem('g2-notes-backup', data.text);
+  function timeLabel(ts) {
+    const d = new Date(ts);
+    return pad(d.getHours()) + ':' + pad(d.getMinutes());
+  }
+
+  function sendIdea() {
+    const nameEl = document.getElementById('feed-name');
+    const ideaEl = document.getElementById('feed-idea');
+    const name = nameEl.value.trim() || 'Anonymous';
+    const idea = ideaEl.value.trim();
+    if (!idea) { ideaEl.focus(); return; }
+
+    const id = Date.now() + '-' + Math.random().toString(36).slice(2,7);
+    feed.get(id).put({ name, idea, ts: Date.now() });
+
+    // Remember name for convenience
+    localStorage.setItem('g2-feed-name', name);
+    ideaEl.value = '';
+    ideaEl.focus();
+  }
+
+  // Restore saved name
+  const savedName = localStorage.getItem('g2-feed-name');
+  if (savedName) document.getElementById('feed-name').value = savedName;
+
+  // Listen for all messages — each fires independently, none overwrite each other
+  feed.map().on((msg, id) => {
+    if (!msg || !msg.idea || rendered.has(id)) return;
+    rendered.add(id);
+
+    const el = document.createElement('div');
+    el.className = 'feed-msg';
+    el.innerHTML =
+      '<div class="who">' + escHtml(msg.name || 'Anonymous') + '</div>' +
+      '<div class="what">' + escHtml(msg.idea) + '</div>' +
+      '<div class="when">' + (msg.ts ? timeLabel(msg.ts) : '') + '</div>';
+
+    // Insert in chronological order
+    let inserted = false;
+    const items = feedList.querySelectorAll('.feed-msg[data-ts]');
+    el.dataset.ts = msg.ts || 0;
+    for (const item of items) {
+      if (Number(item.dataset.ts) > msg.ts) {
+        feedList.insertBefore(el, item);
+        inserted = true;
+        break;
+      }
     }
+    if (!inserted) feedList.appendChild(el);
+    feedList.scrollTop = feedList.scrollHeight;
   });
+
+  function escHtml(s) {
+    return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  }
 </script>
 </body>
 </html>
