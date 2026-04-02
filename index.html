@@ -4,7 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>G2 Kickoff Meeting</title>
-  <script src="https://cdn.jsdelivr.net/npm/gun/gun.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/yjs/dist/yjs.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/y-webrtc/dist/y-webrtc.js"></script>
   <style>
     :root {
       --bg: #121212;
@@ -256,29 +257,55 @@
     }
   }
 
-  // Gun.js real-time shared notepad
-  const gun = Gun(['https://gun-manhattan.herokuapp.com/gun', 'https://relay.peer.ooo/gun']);
-  const doc = gun.get('g2-shared-workspace-document-v1');
   const editor = document.getElementById('shared-notes');
 
-  const localBackup = localStorage.getItem('g2-notes-backup');
-  if (localBackup) editor.value = localBackup;
+  // Yjs + y-webrtc: peer-to-peer CRDT sync.
+  // All browsers on the same room ID share the same document live — no server, no refresh.
+  const ydoc = new Y.Doc();
+  const ytext = ydoc.getText('g2-notes');
 
-  editor.addEventListener('input', () => {
-    doc.put({ text: editor.value });
-    localStorage.setItem('g2-notes-backup', editor.value);
+  const provider = new WebrtcProvider('g2-kickoff-meeting-v1', ydoc, {
+    signaling: [
+      'wss://signaling.yjs.dev',
+      'wss://y-webrtc-signaling-eu.herokuapp.com',
+      'wss://y-webrtc-signaling-us.herokuapp.com'
+    ]
   });
 
-  // .open() fires immediately for new visitors with the current value,
-  // and keeps firing whenever any peer updates — no refresh needed.
-  doc.open((data) => {
-    if (data && typeof data.text === 'string' && data.text !== editor.value) {
-      const start = editor.selectionStart;
-      const end = editor.selectionEnd;
-      editor.value = data.text;
-      if (document.activeElement === editor) editor.setSelectionRange(start, end);
-      localStorage.setItem('g2-notes-backup', data.text);
+  // Load local backup immediately so it feels instant on page load
+  const saved = localStorage.getItem('g2-notes-backup');
+
+  // Only seed from localStorage if the Yjs doc is empty (first ever load)
+  provider.on('synced', (synced) => {
+    if (synced && ytext.toString() === '' && saved) {
+      ydoc.transact(() => ytext.insert(0, saved));
     }
+  });
+
+  // When Yjs document changes (from any peer) — update the textarea
+  ytext.observe(() => {
+    const newVal = ytext.toString();
+    if (newVal !== editor.value) {
+      const start = editor.selectionStart;
+      const end   = editor.selectionEnd;
+      editor.value = newVal;
+      if (document.activeElement === editor) editor.setSelectionRange(start, end);
+    }
+    localStorage.setItem('g2-notes-backup', newVal);
+  });
+
+  // When the user types — update the Yjs document (which syncs to all peers)
+  editor.addEventListener('input', () => {
+    const current = ytext.toString();
+    const next    = editor.value;
+    if (current !== next) {
+      // Replace entire text via a single transaction
+      ydoc.transact(() => {
+        ytext.delete(0, current.length);
+        ytext.insert(0, next);
+      });
+    }
+    localStorage.setItem('g2-notes-backup', next);
   });
 </script>
 </body>
