@@ -1,0 +1,1371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Sub Group G2 – Kickoff Meeting Agenda</title>
+  <style>
+    :root {
+      --bg: #0f1117;
+      --surface: #1a1d2e;
+      --surface2: #232640;
+      --accent: #6c63ff;
+      --accent2: #00d4aa;
+      --accent3: #ff6b6b;
+      --accent4: #ffc94a;
+      --text: #e8eaf6;
+      --text-muted: #8a93b5;
+      --border: #2e3250;
+      --card-hover: #262a45;
+      --radius: 12px;
+      --shadow: 0 4px 24px rgba(0,0,0,0.35);
+    }
+    [data-theme="light"] {
+      --bg: #f0f2fc;
+      --surface: #ffffff;
+      --surface2: #eef0fa;
+      --accent: #5a54d4;
+      --accent2: #00a88a;
+      --accent3: #e05454;
+      --accent4: #e6a800;
+      --text: #1a1d2e;
+      --text-muted: #5a6080;
+      --border: #d0d4ee;
+      --card-hover: #e8eaf8;
+      --shadow: 0 4px 24px rgba(100,100,160,0.12);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      transition: background 0.3s, color 0.3s;
+    }
+
+    /* ── Header ── */
+    header {
+      background: linear-gradient(135deg, #1e1b4b 0%, #312e81 50%, #1e3a5f 100%);
+      padding: 2rem 2.5rem 1.5rem;
+      position: relative;
+      overflow: hidden;
+    }
+    [data-theme="light"] header {
+      background: linear-gradient(135deg, #4f46e5 0%, #6d28d9 50%, #1d4ed8 100%);
+    }
+    header::before {
+      content: '';
+      position: absolute;
+      top: -60px; right: -60px;
+      width: 220px; height: 220px;
+      border-radius: 50%;
+      background: rgba(108,99,255,0.18);
+    }
+    header::after {
+      content: '';
+      position: absolute;
+      bottom: -40px; left: 30%;
+      width: 160px; height: 160px;
+      border-radius: 50%;
+      background: rgba(0,212,170,0.12);
+    }
+    .header-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      flex-wrap: wrap;
+      gap: 1rem;
+      position: relative;
+      z-index: 1;
+    }
+    .badge {
+      display: inline-block;
+      background: rgba(108,99,255,0.35);
+      border: 1px solid rgba(108,99,255,0.6);
+      color: #c4c1ff;
+      border-radius: 20px;
+      padding: 3px 14px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      margin-bottom: 0.5rem;
+    }
+    header h1 {
+      font-size: clamp(1.4rem, 3vw, 2.1rem);
+      font-weight: 800;
+      color: #fff;
+      line-height: 1.2;
+    }
+    header h1 span { color: #a5b4fc; }
+    header .subtitle {
+      color: rgba(255,255,255,0.65);
+      font-size: 0.95rem;
+      margin-top: 0.35rem;
+    }
+    .header-controls {
+      display: flex;
+      gap: 0.6rem;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    .btn-icon {
+      background: rgba(255,255,255,0.1);
+      border: 1px solid rgba(255,255,255,0.2);
+      color: #fff;
+      border-radius: 8px;
+      padding: 0.45rem 0.9rem;
+      font-size: 0.82rem;
+      cursor: pointer;
+      transition: background 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+    .btn-icon:hover { background: rgba(255,255,255,0.2); }
+
+    /* Live Clock */
+    .live-clock-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(0,0,0,0.25);
+      border-radius: 8px;
+      padding: 0.5rem 1.2rem;
+      margin-top: 1rem;
+      position: relative;
+      z-index: 1;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+    .live-clock-bar .clock { font-size: 1.2rem; font-weight: 700; color: #a5b4fc; }
+    .live-clock-bar .date-label { font-size: 0.82rem; color: rgba(255,255,255,0.55); }
+    .progress-label { font-size: 0.82rem; color: rgba(255,255,255,0.6); }
+    .meeting-meta {
+      display: flex;
+      gap: 1.5rem;
+      flex-wrap: wrap;
+      margin-top: 0.5rem;
+      position: relative;
+      z-index: 1;
+    }
+    .meta-chip {
+      font-size: 0.8rem;
+      color: rgba(255,255,255,0.6);
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+    }
+    .meta-chip strong { color: rgba(255,255,255,0.9); }
+
+    /* ── Layout ── */
+    main { max-width: 1000px; margin: 0 auto; padding: 2rem 1.5rem; }
+
+    /* ── Progress Bar ── */
+    .overall-progress { margin-bottom: 2rem; }
+    .overall-progress h3 {
+      font-size: 0.82rem; color: var(--text-muted);
+      text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 0.5rem;
+    }
+    .prog-bar-bg {
+      background: var(--border);
+      border-radius: 20px;
+      height: 8px;
+      overflow: hidden;
+    }
+    .prog-bar-fill {
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      height: 100%;
+      border-radius: 20px;
+      transition: width 0.5s ease;
+    }
+    .prog-stats {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      margin-top: 0.3rem;
+    }
+
+    /* ── Agenda Card ── */
+    .agenda-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      margin-bottom: 1rem;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      transition: border-color 0.2s;
+    }
+    .agenda-card.done { border-left: 4px solid var(--accent2); opacity: 0.8; }
+    .agenda-card.active { border-left: 4px solid var(--accent4); }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 1rem 1.2rem;
+      cursor: pointer;
+      user-select: none;
+      transition: background 0.2s;
+    }
+    .card-header:hover { background: var(--card-hover); }
+
+    .step-badge {
+      min-width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 0.85rem;
+      flex-shrink: 0;
+    }
+    .step-badge.pending  { background: var(--surface2); color: var(--text-muted); border: 2px solid var(--border); }
+    .step-badge.active   { background: rgba(255,201,74,0.2); color: var(--accent4); border: 2px solid var(--accent4); }
+    .step-badge.done     { background: rgba(0,212,170,0.15); color: var(--accent2); border: 2px solid var(--accent2); }
+
+    .card-title-group { flex: 1; min-width: 0; }
+    .card-title {
+      font-weight: 700;
+      font-size: 1rem;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+    .card-title .time-chip {
+      font-size: 0.72rem;
+      padding: 2px 8px;
+      border-radius: 10px;
+      background: var(--surface2);
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+    .card-subtitle { font-size: 0.8rem; color: var(--text-muted); margin-top: 0.2rem; }
+
+    .card-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      flex-shrink: 0;
+    }
+    .mark-btn {
+      font-size: 0.75rem;
+      padding: 5px 12px;
+      border-radius: 6px;
+      border: none;
+      cursor: pointer;
+      font-weight: 600;
+      transition: 0.2s;
+    }
+    .mark-btn.complete-btn {
+      background: rgba(0,212,170,0.15);
+      color: var(--accent2);
+      border: 1px solid rgba(0,212,170,0.3);
+    }
+    .mark-btn.complete-btn:hover { background: rgba(0,212,170,0.25); }
+    .mark-btn.undo-btn {
+      background: rgba(255,107,107,0.15);
+      color: var(--accent3);
+      border: 1px solid rgba(255,107,107,0.3);
+    }
+    .mark-btn.undo-btn:hover { background: rgba(255,107,107,0.25); }
+
+    .chevron {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      transition: transform 0.25s;
+    }
+    .agenda-card.expanded .chevron { transform: rotate(180deg); }
+
+    /* ── Card Body ── */
+    .card-body {
+      display: none;
+      padding: 0 1.2rem 1.2rem;
+      border-top: 1px solid var(--border);
+    }
+    .agenda-card.expanded .card-body { display: block; }
+
+    .card-body .section-title {
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      color: var(--text-muted);
+      margin: 1rem 0 0.5rem;
+      font-weight: 700;
+    }
+    .topic-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+    }
+    .topic-list li {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.5rem;
+      font-size: 0.88rem;
+      color: var(--text);
+      padding: 0.4rem 0.6rem;
+      border-radius: 6px;
+      background: var(--surface2);
+    }
+    .topic-list li::before {
+      content: '▸';
+      color: var(--accent);
+      font-size: 0.7rem;
+      margin-top: 2px;
+      flex-shrink: 0;
+    }
+
+    /* Timer */
+    .timer-row {
+      display: flex;
+      align-items: center;
+      gap: 0.7rem;
+      margin-top: 0.9rem;
+      flex-wrap: wrap;
+    }
+    .timer-display {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--accent4);
+      font-variant-numeric: tabular-nums;
+      min-width: 55px;
+    }
+    .timer-display.running { color: var(--accent2); }
+    .timer-display.overtime { color: var(--accent3); animation: pulse 1s infinite; }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.5} }
+    .timer-btn {
+      font-size: 0.75rem;
+      padding: 4px 11px;
+      border-radius: 6px;
+      border: none;
+      cursor: pointer;
+      font-weight: 600;
+    }
+    .timer-btn.start { background: rgba(0,212,170,0.15); color: var(--accent2); border: 1px solid rgba(0,212,170,0.35); }
+    .timer-btn.stop  { background: rgba(255,107,107,0.15); color: var(--accent3); border: 1px solid rgba(255,107,107,0.35); }
+    .timer-btn.reset { background: var(--surface2); color: var(--text-muted); border: 1px solid var(--border); }
+    .allotted-label { font-size: 0.72rem; color: var(--text-muted); }
+
+    /* Notes */
+    .notes-area {
+      width: 100%;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text);
+      font-family: inherit;
+      font-size: 0.87rem;
+      padding: 0.7rem 0.9rem;
+      resize: vertical;
+      min-height: 70px;
+      transition: border-color 0.2s;
+      outline: none;
+      margin-top: 0.5rem;
+    }
+    .notes-area:focus { border-color: var(--accent); }
+    .notes-area::placeholder { color: var(--text-muted); }
+
+    /* ── Ideas Board ── */
+    .ideas-section {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.5rem;
+      margin-top: 2rem;
+      box-shadow: var(--shadow);
+    }
+    .ideas-section h2 {
+      font-size: 1.05rem;
+      font-weight: 700;
+      margin-bottom: 0.3rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .ideas-section .ideas-sub {
+      font-size: 0.83rem;
+      color: var(--text-muted);
+      margin-bottom: 1rem;
+    }
+    .ideas-input-row {
+      display: flex;
+      gap: 0.6rem;
+      flex-wrap: wrap;
+      margin-bottom: 1.2rem;
+    }
+    .ideas-input-row input, .ideas-input-row select {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text);
+      font-family: inherit;
+      font-size: 0.87rem;
+      padding: 0.55rem 0.9rem;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .ideas-input-row input { flex: 1; min-width: 200px; }
+    .ideas-input-row input:focus, .ideas-input-row select:focus { border-color: var(--accent); }
+    .ideas-input-row select option { background: var(--surface); }
+    .add-idea-btn {
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 0.55rem 1.2rem;
+      font-weight: 700;
+      font-size: 0.87rem;
+      cursor: pointer;
+      transition: opacity 0.2s;
+    }
+    .add-idea-btn:hover { opacity: 0.85; }
+
+    .ideas-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 0.85rem;
+    }
+    .idea-card {
+      border-radius: 10px;
+      padding: 0.9rem 1rem;
+      position: relative;
+      border-left: 4px solid;
+      animation: fadeSlideIn 0.3s ease;
+    }
+    @keyframes fadeSlideIn {
+      from { opacity:0; transform:translateY(-8px); }
+      to   { opacity:1; transform:translateY(0); }
+    }
+    .idea-card.tech    { background: rgba(108,99,255,0.12); border-color: var(--accent); }
+    .idea-card.arch    { background: rgba(0,212,170,0.10); border-color: var(--accent2); }
+    .idea-card.process { background: rgba(255,201,74,0.10); border-color: var(--accent4); }
+    .idea-card.risk    { background: rgba(255,107,107,0.10); border-color: var(--accent3); }
+    .idea-card.general { background: var(--surface2); border-color: var(--text-muted); }
+
+    .idea-tag {
+      font-size: 0.68rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      opacity: 0.75;
+      margin-bottom: 0.4rem;
+    }
+    .idea-text { font-size: 0.87rem; color: var(--text); line-height: 1.45; }
+    .idea-author { font-size: 0.73rem; color: var(--text-muted); margin-top: 0.5rem; }
+    .idea-delete {
+      position: absolute;
+      top: 0.5rem; right: 0.6rem;
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      font-size: 0.85rem;
+      opacity: 0.5;
+      transition: opacity 0.2s;
+    }
+    .idea-delete:hover { opacity: 1; color: var(--accent3); }
+
+    /* ── Action Items ── */
+    .action-section {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.5rem;
+      margin-top: 1.5rem;
+      box-shadow: var(--shadow);
+    }
+    .action-section h2 {
+      font-size: 1.05rem;
+      font-weight: 700;
+      margin-bottom: 0.3rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .action-section .action-sub {
+      font-size: 0.83rem;
+      color: var(--text-muted);
+      margin-bottom: 1rem;
+    }
+    .action-input-row {
+      display: flex;
+      gap: 0.6rem;
+      flex-wrap: wrap;
+      margin-bottom: 1rem;
+    }
+    .action-input-row input {
+      flex: 1; min-width: 180px;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text);
+      font-family: inherit;
+      font-size: 0.87rem;
+      padding: 0.55rem 0.9rem;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .action-input-row input:focus { border-color: var(--accent); }
+    .add-action-btn {
+      background: var(--accent2);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 0.55rem 1.2rem;
+      font-weight: 700;
+      font-size: 0.87rem;
+      cursor: pointer;
+      transition: opacity 0.2s;
+    }
+    .add-action-btn:hover { opacity: 0.85; }
+    .action-list { display: flex; flex-direction: column; gap: 0.5rem; }
+    .action-item {
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+      padding: 0.65rem 0.9rem;
+      background: var(--surface2);
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      animation: fadeSlideIn 0.3s ease;
+    }
+    .action-item input[type="checkbox"] {
+      width: 16px; height: 16px;
+      accent-color: var(--accent2);
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+    .action-item label {
+      flex: 1;
+      font-size: 0.87rem;
+      cursor: pointer;
+      transition: opacity 0.2s;
+    }
+    .action-item.checked label { text-decoration: line-through; opacity: 0.5; }
+    .action-owner {
+      font-size: 0.73rem;
+      color: var(--text-muted);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 5px;
+      padding: 2px 8px;
+      flex-shrink: 0;
+    }
+    .action-del {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      font-size: 0.85rem;
+      opacity: 0.4;
+      transition: opacity 0.2s;
+      padding: 0 4px;
+    }
+    .action-del:hover { opacity: 1; color: var(--accent3); }
+
+    /* ── Tech Stack ── */
+    .tech-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-top: 0.5rem;
+    }
+    .tech-pill {
+      font-size: 0.78rem;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-weight: 600;
+      cursor: default;
+    }
+    .tech-pill.ml   { background: rgba(108,99,255,0.2); color: #a5b4fc; border: 1px solid rgba(108,99,255,0.4); }
+    .tech-pill.data { background: rgba(0,212,170,0.15); color: #6ee7d4; border: 1px solid rgba(0,212,170,0.35); }
+    .tech-pill.api  { background: rgba(255,201,74,0.15); color: #fde68a; border: 1px solid rgba(255,201,74,0.35); }
+    .tech-pill.infra{ background: rgba(255,107,107,0.15); color: #fca5a5; border: 1px solid rgba(255,107,107,0.35); }
+    [data-theme="light"] .tech-pill.ml   { color: #4338ca; background: rgba(108,99,255,0.1); }
+    [data-theme="light"] .tech-pill.data { color: #047857; background: rgba(0,212,170,0.1); }
+    [data-theme="light"] .tech-pill.api  { color: #92400e; background: rgba(255,201,74,0.1); }
+    [data-theme="light"] .tech-pill.infra{ color: #991b1b; background: rgba(255,107,107,0.1); }
+
+    /* ── Print ── */
+    .footer {
+      text-align: center;
+      padding: 2rem 0 1rem;
+      font-size: 0.78rem;
+      color: var(--text-muted);
+    }
+
+    @media print {
+      header { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+      .btn-icon, .mark-btn, .timer-btn, .add-idea-btn, .add-action-btn, .idea-delete, .action-del { display: none !important; }
+      .card-body { display: block !important; }
+      body { background: white; color: #111; }
+    }
+
+    @media (max-width: 600px) {
+      header { padding: 1.2rem 1rem 1rem; }
+      main { padding: 1rem; }
+      .card-header { gap: 0.6rem; }
+    }
+  </style>
+</head>
+<body data-theme="dark">
+
+<!-- ─────────────────── HEADER ─────────────────── -->
+<header>
+  <div class="header-top">
+    <div>
+      <div class="badge">🚌 Group G &nbsp;•&nbsp; Sub Group G2</div>
+      <h1>Kickoff Meeting — <span>Data & Intelligence</span></h1>
+      <div class="subtitle">First Online Team Meeting &nbsp;|&nbsp; Public Transport System Project</div>
+      <div class="meeting-meta">
+        <div class="meta-chip">📅 <strong id="meta-date">Loading…</strong></div>
+        <div class="meta-chip">⏱ <strong>~95 min total</strong></div>
+        <div class="meta-chip">👥 <strong>Sub Group 2</strong></div>
+        <div class="meta-chip">📌 <strong>Online</strong></div>
+      </div>
+    </div>
+    <div class="header-controls">
+      <button class="btn-icon" onclick="toggleTheme()">🌗 Theme</button>
+      <button class="btn-icon" onclick="expandAll()">⊞ Expand All</button>
+      <button class="btn-icon" onclick="collapseAll()">⊟ Collapse All</button>
+      <button class="btn-icon" onclick="window.print()">🖨 Print</button>
+    </div>
+  </div>
+  <div class="live-clock-bar">
+    <div>
+      <div class="clock" id="live-clock">--:--:--</div>
+      <div class="date-label">Live Time</div>
+    </div>
+    <div class="progress-label" id="progress-txt">0 of 10 items completed</div>
+  </div>
+</header>
+
+<!-- ─────────────────── MAIN ─────────────────── -->
+<main>
+
+  <!-- Overall Progress -->
+  <div class="overall-progress">
+    <h3>Meeting Progress</h3>
+    <div class="prog-bar-bg">
+      <div class="prog-bar-fill" id="prog-fill" style="width:0%"></div>
+    </div>
+    <div class="prog-stats">
+      <span id="prog-done-label">0 items done</span>
+      <span id="prog-pct">0%</span>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════
+       AGENDA ITEMS
+  ══════════════════════════════════════════════════════ -->
+
+  <!-- 1. Welcome & Roll Call -->
+  <div class="agenda-card" id="card-1">
+    <div class="card-header" onclick="toggleCard('card-1')">
+      <div class="step-badge pending" id="badge-1">1</div>
+      <div class="card-title-group">
+        <div class="card-title">👋 Welcome & Roll Call <span class="time-chip">5 min</span></div>
+        <div class="card-subtitle">Open the meeting, confirm attendance, set the tone</div>
+      </div>
+      <div class="card-actions" onclick="event.stopPropagation()">
+        <button class="mark-btn complete-btn" onclick="markDone('card-1','badge-1')">✔ Done</button>
+      </div>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="card-body">
+      <div class="section-title">Discussion Points</div>
+      <ul class="topic-list">
+        <li>Greet all members; confirm everyone can hear and see properly</li>
+        <li>Quick self-introductions: name, course/year, brief skill background</li>
+        <li>Confirm meeting recording policy (if any)</li>
+        <li>Announce expected duration and house rules (mic etiquette, questions at end, etc.)</li>
+        <li>Share any links / docs in the chat for the team</li>
+      </ul>
+      <div class="timer-row" data-allotted="300">
+        <span class="timer-display" id="timer-1">05:00</span>
+        <button class="timer-btn start" onclick="startTimer('1',300)">▶ Start</button>
+        <button class="timer-btn stop" onclick="stopTimer('1')">■ Pause</button>
+        <button class="timer-btn reset" onclick="resetTimer('1',300)">↺ Reset</button>
+        <span class="allotted-label">Allotted: 5 min</span>
+      </div>
+      <div class="section-title">Notes / Extra Points</div>
+      <textarea class="notes-area" id="notes-1" placeholder="Add extra notes, member attendance, etc.…"></textarea>
+    </div>
+  </div>
+
+  <!-- 2. Project Overview -->
+  <div class="agenda-card" id="card-2">
+    <div class="card-header" onclick="toggleCard('card-2')">
+      <div class="step-badge pending" id="badge-2">2</div>
+      <div class="card-title-group">
+        <div class="card-title">🚌 Project Overview — Group G <span class="time-chip">10 min</span></div>
+        <div class="card-subtitle">Understand the full project scope before diving into our sub-group</div>
+      </div>
+      <div class="card-actions" onclick="event.stopPropagation()">
+        <button class="mark-btn complete-btn" onclick="markDone('card-2','badge-2')">✔ Done</button>
+      </div>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="card-body">
+      <div class="section-title">Discussion Points</div>
+      <ul class="topic-list">
+        <li>Group G Mission: Real-time transport tracking and ETA prediction system</li>
+        <li>High-level system diagram — GPS data → processing → predictions → end-users</li>
+        <li>Who are the end-users? (commuters, operators, city dashboards)</li>
+        <li>Overview of ALL sub-groups and how G2 connects to them (G1 frontend, G3 infra, etc.)</li>
+        <li>Key constraints: real-time latency requirements, data volume estimates, accuracy targets</li>
+        <li>Deliverables and grading criteria overview</li>
+      </ul>
+      <div class="timer-row">
+        <span class="timer-display" id="timer-2">10:00</span>
+        <button class="timer-btn start" onclick="startTimer('2',600)">▶ Start</button>
+        <button class="timer-btn stop" onclick="stopTimer('2')">■ Pause</button>
+        <button class="timer-btn reset" onclick="resetTimer('2',600)">↺ Reset</button>
+        <span class="allotted-label">Allotted: 10 min</span>
+      </div>
+      <div class="section-title">Notes / Extra Points</div>
+      <textarea class="notes-area" id="notes-2" placeholder="Clarifications, questions raised, links shared…"></textarea>
+    </div>
+  </div>
+
+  <!-- 3. Sub Group G2 Responsibilities -->
+  <div class="agenda-card" id="card-3">
+    <div class="card-header" onclick="toggleCard('card-3')">
+      <div class="step-badge pending" id="badge-3">3</div>
+      <div class="card-title-group">
+        <div class="card-title">📋 Sub Group G2 Responsibilities <span class="time-chip">10 min</span></div>
+        <div class="card-subtitle">Define what we own and our boundaries clearly</div>
+      </div>
+      <div class="card-actions" onclick="event.stopPropagation()">
+        <button class="mark-btn complete-btn" onclick="markDone('card-3','badge-3')">✔ Done</button>
+      </div>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="card-body">
+      <div class="section-title">Our Core Responsibilities</div>
+      <ul class="topic-list">
+        <li>Data Ingestion & Storage — GPS streams, schedule data, weather feeds</li>
+        <li>Stream + Batch Processing — real-time pipeline vs. historical analysis</li>
+        <li>AI/ML Model Development — ETA prediction, anomaly detection, demand forecasting</li>
+        <li>Prediction & Analytics — serving model output to other sub-groups via API</li>
+        <li>Data Validation & Quality Checks — schema validation, outlier detection, data drift monitoring</li>
+      </ul>
+      <div class="section-title">Boundary Discussion</div>
+      <ul class="topic-list">
+        <li>What does G2 hand OFF to other sub-groups? (API contracts, data schemas)</li>
+        <li>What do we RECEIVE from other sub-groups? (raw GPS feeds, user queries)</li>
+        <li>Who owns the database? shared or exclusively G2?</li>
+      </ul>
+      <div class="timer-row">
+        <span class="timer-display" id="timer-3">10:00</span>
+        <button class="timer-btn start" onclick="startTimer('3',600)">▶ Start</button>
+        <button class="timer-btn stop" onclick="stopTimer('3')">■ Pause</button>
+        <button class="timer-btn reset" onclick="resetTimer('3',600)">↺ Reset</button>
+        <span class="allotted-label">Allotted: 10 min</span>
+      </div>
+      <div class="section-title">Notes / Extra Points</div>
+      <textarea class="notes-area" id="notes-3" placeholder="Agreed boundaries, open questions…"></textarea>
+    </div>
+  </div>
+
+  <!-- 4. Technology Stack -->
+  <div class="agenda-card" id="card-4">
+    <div class="card-header" onclick="toggleCard('card-4')">
+      <div class="step-badge pending" id="badge-4">4</div>
+      <div class="card-title-group">
+        <div class="card-title">🛠 Technology Stack Review <span class="time-chip">15 min</span></div>
+        <div class="card-subtitle">Discuss recommended tools, ownership, and learning gaps</div>
+      </div>
+      <div class="card-actions" onclick="event.stopPropagation()">
+        <button class="mark-btn complete-btn" onclick="markDone('card-4','badge-4')">✔ Done</button>
+      </div>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="card-body">
+      <div class="section-title">Recommended Stack</div>
+      <div class="tech-pills">
+        <span class="tech-pill ml">PyTorch</span>
+        <span class="tech-pill ml">TensorFlow</span>
+        <span class="tech-pill ml">MLflow</span>
+        <span class="tech-pill api">FastAPI</span>
+        <span class="tech-pill data">PostgreSQL</span>
+        <span class="tech-pill data">InfluxDB</span>
+        <span class="tech-pill infra">Apache Kafka</span>
+        <span class="tech-pill infra">Apache Spark</span>
+        <span class="tech-pill infra">Apache Flink</span>
+        <span class="tech-pill infra">Airflow</span>
+        <span class="tech-pill data">Great Expectations</span>
+      </div>
+      <div class="section-title">Discussion Points</div>
+      <ul class="topic-list">
+        <li>Poll team familiarity: who has used Kafka / Spark / Flink before?</li>
+        <li>PyTorch vs TensorFlow — agree on one primary framework to avoid fragmentation</li>
+        <li>InfluxDB for time-series GPS data vs PostgreSQL for relational scheduling data</li>
+        <li>MLflow for experiment tracking — standardize from day one</li>
+        <li>Airflow for batch pipeline orchestration; Flink/Kafka for stream processing</li>
+        <li>Great Expectations — lightweight intro; who will own data quality pipeline?</li>
+        <li>Local dev setup vs cloud/Docker — agree on a standard environment</li>
+        <li>Version control strategy: branch naming, PR reviews, CI integration</li>
+      </ul>
+      <div class="timer-row">
+        <span class="timer-display" id="timer-4">15:00</span>
+        <button class="timer-btn start" onclick="startTimer('4',900)">▶ Start</button>
+        <button class="timer-btn stop" onclick="stopTimer('4')">■ Pause</button>
+        <button class="timer-btn reset" onclick="resetTimer('4',900)">↺ Reset</button>
+        <span class="allotted-label">Allotted: 15 min</span>
+      </div>
+      <div class="section-title">Notes / Extra Points</div>
+      <textarea class="notes-area" id="notes-4" placeholder="Agreed tools, alternatives proposed, learning plan…"></textarea>
+    </div>
+  </div>
+
+  <!-- 5. System Architecture -->
+  <div class="agenda-card" id="card-5">
+    <div class="card-header" onclick="toggleCard('card-5')">
+      <div class="step-badge pending" id="badge-5">5</div>
+      <div class="card-title-group">
+        <div class="card-title">🏗 High-Level System Architecture <span class="time-chip">15 min</span></div>
+        <div class="card-subtitle">Sketch the data flow end-to-end within G2's scope</div>
+      </div>
+      <div class="card-actions" onclick="event.stopPropagation()">
+        <button class="mark-btn complete-btn" onclick="markDone('card-5','badge-5')">✔ Done</button>
+      </div>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="card-body">
+      <div class="section-title">Architecture Layers to Discuss</div>
+      <ul class="topic-list">
+        <li><strong>Ingestion Layer:</strong> Kafka topics for GPS events, REST/WebSocket connectors for live feeds</li>
+        <li><strong>Stream Processing:</strong> Flink / Spark Streaming for real-time ETA computation</li>
+        <li><strong>Batch Layer:</strong> Spark batch jobs + Airflow DAGs for model training data prep</li>
+        <li><strong>Storage:</strong> InfluxDB (time-series GPS), PostgreSQL (routes, schedules, users)</li>
+        <li><strong>ML Layer:</strong> model training (PyTorch/TF) → MLflow tracking → model registry</li>
+        <li><strong>Serving Layer:</strong> FastAPI endpoints for ETA predictions & analytics queries</li>
+        <li><strong>Quality Layer:</strong> Great Expectations checks at ingestion and post-processing</li>
+      </ul>
+      <div class="section-title">Key Questions to Resolve</div>
+      <ul class="topic-list">
+        <li>Monorepo vs. separate repos per component?</li>
+        <li>Containerisation strategy — Docker Compose for local, Kubernetes for prod?</li>
+        <li>Data schema design — agree on GPS event payload format</li>
+        <li>Latency SLA: what is an acceptable ETA prediction delay? (target: &lt;2s?)</li>
+      </ul>
+      <div class="timer-row">
+        <span class="timer-display" id="timer-5">15:00</span>
+        <button class="timer-btn start" onclick="startTimer('5',900)">▶ Start</button>
+        <button class="timer-btn stop" onclick="stopTimer('5')">■ Pause</button>
+        <button class="timer-btn reset" onclick="resetTimer('5',900)">↺ Reset</button>
+        <span class="allotted-label">Allotted: 15 min</span>
+      </div>
+      <div class="section-title">Notes / Extra Points</div>
+      <textarea class="notes-area" id="notes-5" placeholder="Architecture decisions, diagrams links, alternatives…"></textarea>
+    </div>
+  </div>
+
+  <!-- 6. Role & Task Assignment -->
+  <div class="agenda-card" id="card-6">
+    <div class="card-header" onclick="toggleCard('card-6')">
+      <div class="step-badge pending" id="badge-6">6</div>
+      <div class="card-title-group">
+        <div class="card-title">👤 Role & Task Assignment <span class="time-chip">10 min</span></div>
+        <div class="card-subtitle">Match team members to workstreams based on skills & interest</div>
+      </div>
+      <div class="card-actions" onclick="event.stopPropagation()">
+        <button class="mark-btn complete-btn" onclick="markDone('card-6','badge-6')">✔ Done</button>
+      </div>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="card-body">
+      <div class="section-title">Proposed Workstreams</div>
+      <ul class="topic-list">
+        <li><strong>Stream & Ingestion Lead</strong> — owns Kafka + Flink pipeline, GPS data ingestion</li>
+        <li><strong>ML Engineer(s)</strong> — model development, training loops, MLflow tracking</li>
+        <li><strong>Data Engineer</strong> — Spark batch jobs, Airflow DAGs, database schemas</li>
+        <li><strong>API & Serving Engineer</strong> — FastAPI service, model serving, endpoint contracts</li>
+        <li><strong>Data Quality Engineer</strong> — Great Expectations suite, monitoring dashboards</li>
+        <li><strong>DevOps / Integration</strong> — Docker, CI/CD, environment standardisation</li>
+      </ul>
+      <div class="section-title">Discussion Points</div>
+      <ul class="topic-list">
+        <li>Allow team members to volunteer for roles they are interested in</li>
+        <li>Identify skill gaps early — plan for knowledge-sharing sessions</li>
+        <li>Decide on a "buddy" system for code review pairs</li>
+        <li>Who will be the primary contact with other sub-groups?</li>
+      </ul>
+      <div class="timer-row">
+        <span class="timer-display" id="timer-6">10:00</span>
+        <button class="timer-btn start" onclick="startTimer('6',600)">▶ Start</button>
+        <button class="timer-btn stop" onclick="stopTimer('6')">■ Pause</button>
+        <button class="timer-btn reset" onclick="resetTimer('6',600)">↺ Reset</button>
+        <span class="allotted-label">Allotted: 10 min</span>
+      </div>
+      <div class="section-title">Notes / Assignments</div>
+      <textarea class="notes-area" id="notes-6" placeholder="Member → Role assignments, any objections or alternatives discussed…"></textarea>
+    </div>
+  </div>
+
+  <!-- 7. Timeline & Milestones -->
+  <div class="agenda-card" id="card-7">
+    <div class="card-header" onclick="toggleCard('card-7')">
+      <div class="step-badge pending" id="badge-7">7</div>
+      <div class="card-title-group">
+        <div class="card-title">📅 Timeline & Milestones <span class="time-chip">10 min</span></div>
+        <div class="card-subtitle">Set sprint cadence and key delivery dates</div>
+      </div>
+      <div class="card-actions" onclick="event.stopPropagation()">
+        <button class="mark-btn complete-btn" onclick="markDone('card-7','badge-7')">✔ Done</button>
+      </div>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="card-body">
+      <div class="section-title">Proposed Phases</div>
+      <ul class="topic-list">
+        <li><strong>Phase 1 (Setup):</strong> Environment setup, repo structure, schema design, hello-world pipeline</li>
+        <li><strong>Phase 2 (Core Pipeline):</strong> Kafka → Flink ingestion, PostgreSQL + InfluxDB integration, baseline ML model</li>
+        <li><strong>Phase 3 (ML & Analytics):</strong> ETA prediction model training + evaluation, MLflow integration, FastAPI serving</li>
+        <li><strong>Phase 4 (Quality & Integration):</strong> Great Expectations suite, Airflow DAGs, integration with other sub-groups</li>
+        <li><strong>Phase 5 (Demo & Documentation):</strong> End-to-end demo, documentation, presentation prep</li>
+      </ul>
+      <div class="section-title">Discussion Points</div>
+      <ul class="topic-list">
+        <li>Align Phase deadlines with overall project submission deadlines</li>
+        <li>Weekly or bi-weekly sprint review meetings?</li>
+        <li>Define "Definition of Done" for each phase</li>
+        <li>Buffer time for integration issues and unexpected blockers</li>
+      </ul>
+      <div class="timer-row">
+        <span class="timer-display" id="timer-7">10:00</span>
+        <button class="timer-btn start" onclick="startTimer('7',600)">▶ Start</button>
+        <button class="timer-btn stop" onclick="stopTimer('7')">■ Pause</button>
+        <button class="timer-btn reset" onclick="resetTimer('7',600)">↺ Reset</button>
+        <span class="allotted-label">Allotted: 10 min</span>
+      </div>
+      <div class="section-title">Notes / Agreed Dates</div>
+      <textarea class="notes-area" id="notes-7" placeholder="Milestone dates, sprint length decision, DoD criteria…"></textarea>
+    </div>
+  </div>
+
+  <!-- 8. Collaboration & Communication -->
+  <div class="agenda-card" id="card-8">
+    <div class="card-header" onclick="toggleCard('card-8')">
+      <div class="step-badge pending" id="badge-8">8</div>
+      <div class="card-title-group">
+        <div class="card-title">💬 Collaboration & Communication Setup <span class="time-chip">5 min</span></div>
+        <div class="card-subtitle">Agree on how the team will communicate and coordinate</div>
+      </div>
+      <div class="card-actions" onclick="event.stopPropagation()">
+        <button class="mark-btn complete-btn" onclick="markDone('card-8','badge-8')">✔ Done</button>
+      </div>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="card-body">
+      <div class="section-title">Discussion Points</div>
+      <ul class="topic-list">
+        <li>Primary communication channel: Slack / Discord / Teams / WhatsApp group?</li>
+        <li>Project management tool: Jira / Trello / GitHub Projects / Notion?</li>
+        <li>Git platform & repository: GitHub / GitLab — agree on naming and access</li>
+        <li>Code review process: PR minimum reviewers, merge strategy (squash/merge)</li>
+        <li>Regular sync cadence: when, how long, mandatory vs optional attendance</li>
+        <li>Documentation: where to keep design docs, ADRs (Architecture Decision Records)?</li>
+        <li>Escalation path if someone is blocked for more than 24h</li>
+      </ul>
+      <div class="timer-row">
+        <span class="timer-display" id="timer-8">05:00</span>
+        <button class="timer-btn start" onclick="startTimer('8',300)">▶ Start</button>
+        <button class="timer-btn stop" onclick="stopTimer('8')">■ Pause</button>
+        <button class="timer-btn reset" onclick="resetTimer('8',300)">↺ Reset</button>
+        <span class="allotted-label">Allotted: 5 min</span>
+      </div>
+      <div class="section-title">Notes / Agreed Tools</div>
+      <textarea class="notes-area" id="notes-8" placeholder="Chosen tools, repo links, channel names…"></textarea>
+    </div>
+  </div>
+
+  <!-- 9. Open Floor — Ideas & Suggestions -->
+  <div class="agenda-card" id="card-9">
+    <div class="card-header" onclick="toggleCard('card-9')">
+      <div class="step-badge pending" id="badge-9">9</div>
+      <div class="card-title-group">
+        <div class="card-title">💡 Open Floor — Ideas & Suggestions <span class="time-chip">10 min</span></div>
+        <div class="card-subtitle">Every member's voice matters — innovations, concerns, proposals</div>
+      </div>
+      <div class="card-actions" onclick="event.stopPropagation()">
+        <button class="mark-btn complete-btn" onclick="markDone('card-9','badge-9')">✔ Done</button>
+      </div>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="card-body">
+      <div class="section-title">Prompt Questions</div>
+      <ul class="topic-list">
+        <li>Any feature ideas beyond the minimum requirements? (e.g., crowdsourcing delays, weather impact model)</li>
+        <li>Concerns about the tech stack — anything feel too ambitious?</li>
+        <li>Suggestions for making the project stand out in the demo</li>
+        <li>Any external datasets or open APIs that could enrich the model?</li>
+        <li>Ideas for making real-time simulation realistic if live GPS isn't available</li>
+      </ul>
+      <div class="timer-row">
+        <span class="timer-display" id="timer-9">10:00</span>
+        <button class="timer-btn start" onclick="startTimer('9',600)">▶ Start</button>
+        <button class="timer-btn stop" onclick="stopTimer('9')">■ Pause</button>
+        <button class="timer-btn reset" onclick="resetTimer('9',600)">↺ Reset</button>
+        <span class="allotted-label">Allotted: 10 min</span>
+      </div>
+      <div class="section-title">Notes / Ideas Raised</div>
+      <textarea class="notes-area" id="notes-9" placeholder="Ideas, suggestions, concerns raised by team members…"></textarea>
+    </div>
+  </div>
+
+  <!-- 10. Action Items & Wrap-Up -->
+  <div class="agenda-card" id="card-10">
+    <div class="card-header" onclick="toggleCard('card-10')">
+      <div class="step-badge pending" id="badge-10">10</div>
+      <div class="card-title-group">
+        <div class="card-title">✅ Action Items & Wrap-Up <span class="time-chip">5 min</span></div>
+        <div class="card-subtitle">Summarise decisions, assign next steps, and close</div>
+      </div>
+      <div class="card-actions" onclick="event.stopPropagation()">
+        <button class="mark-btn complete-btn" onclick="markDone('card-10','badge-10')">✔ Done</button>
+      </div>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="card-body">
+      <div class="section-title">Wrap-Up Checklist</div>
+      <ul class="topic-list">
+        <li>Read back all action items from the Action Items board below</li>
+        <li>Confirm owner and deadline for each action item</li>
+        <li>Share meeting notes / recording link with the team</li>
+        <li>Announce the date/time of the next meeting</li>
+        <li>Motivational close — thank everyone for attending</li>
+      </ul>
+      <div class="timer-row">
+        <span class="timer-display" id="timer-10">05:00</span>
+        <button class="timer-btn start" onclick="startTimer('10',300)">▶ Start</button>
+        <button class="timer-btn stop" onclick="stopTimer('10')">■ Pause</button>
+        <button class="timer-btn reset" onclick="resetTimer('10',300)">↺ Reset</button>
+        <span class="allotted-label">Allotted: 5 min</span>
+      </div>
+      <div class="section-title">Notes</div>
+      <textarea class="notes-area" id="notes-10" placeholder="Next meeting date/time, final remarks…"></textarea>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════
+       IDEAS BOARD
+  ══════════════════════════════════════════════════════ -->
+  <div class="ideas-section">
+    <h2>💡 Team Ideas Board</h2>
+    <div class="ideas-sub">Capture live ideas from team members during the meeting. Use the category tag to organise them.</div>
+    <div class="ideas-input-row">
+      <input type="text" id="idea-text" placeholder="Type an idea or suggestion…" onkeydown="if(event.key==='Enter') addIdea()"/>
+      <input type="text" id="idea-author" placeholder="Member name (optional)" style="max-width:180px"/>
+      <select id="idea-cat">
+        <option value="tech">🔧 Tech / Tool</option>
+        <option value="arch">🏗 Architecture</option>
+        <option value="process">📋 Process</option>
+        <option value="risk">⚠️ Risk / Concern</option>
+        <option value="general">💬 General</option>
+      </select>
+      <button class="add-idea-btn" onclick="addIdea()">＋ Add Idea</button>
+    </div>
+    <div class="ideas-grid" id="ideas-grid">
+      <!-- Default seed ideas -->
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════
+       ACTION ITEMS
+  ══════════════════════════════════════════════════════ -->
+  <div class="action-section">
+    <h2>📌 Action Items Tracker</h2>
+    <div class="action-sub">Add tasks with an owner — check them off as they are completed after the meeting.</div>
+    <div class="action-input-row">
+      <input type="text" id="action-text" placeholder="Describe the action item…" onkeydown="if(event.key==='Enter') addAction()"/>
+      <input type="text" id="action-owner" placeholder="Owner" style="max-width:140px"/>
+      <button class="add-action-btn" onclick="addAction()">＋ Add</button>
+    </div>
+    <div class="action-list" id="action-list">
+      <!-- Pre-populated defaults -->
+    </div>
+  </div>
+
+  <div class="footer">
+    Sub Group G2 — Data & Intelligence &nbsp;|&nbsp; Public Transport System &nbsp;|&nbsp; All notes are saved in your browser automatically.
+  </div>
+</main>
+
+<!-- ─────────────────── SCRIPTS ─────────────────── -->
+<script>
+// ── Utility ──────────────────────────────────────────────
+function pad(n){ return String(n).padStart(2,'0'); }
+
+// ── Live Clock ────────────────────────────────────────────
+function updateClock(){
+  const now = new Date();
+  document.getElementById('live-clock').textContent =
+    pad(now.getHours())+':'+pad(now.getMinutes())+':'+pad(now.getSeconds());
+  document.getElementById('meta-date').textContent =
+    now.toLocaleDateString('en-US',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+}
+setInterval(updateClock, 1000);
+updateClock();
+
+// ── Theme ─────────────────────────────────────────────────
+function toggleTheme(){
+  const b = document.body;
+  b.dataset.theme = b.dataset.theme === 'dark' ? 'light' : 'dark';
+}
+
+// ── Expand / Collapse ─────────────────────────────────────
+function toggleCard(id){
+  document.getElementById(id).classList.toggle('expanded');
+}
+function expandAll(){
+  document.querySelectorAll('.agenda-card').forEach(c=>c.classList.add('expanded'));
+}
+function collapseAll(){
+  document.querySelectorAll('.agenda-card').forEach(c=>c.classList.remove('expanded'));
+}
+
+// ── Mark Done ─────────────────────────────────────────────
+let doneCount = 0;
+const total = 10;
+
+function markDone(cardId, badgeId){
+  const card  = document.getElementById(cardId);
+  const badge = document.getElementById(badgeId);
+  const btn   = card.querySelector('.mark-btn');
+  if(card.classList.contains('done')) return;
+  card.classList.remove('active');
+  card.classList.add('done');
+  badge.className = 'step-badge done';
+  badge.textContent = '✓';
+  btn.className = 'mark-btn undo-btn';
+  btn.textContent = '↩ Undo';
+  btn.onclick = ()=>undoDone(cardId, badgeId);
+  doneCount++;
+  updateProgress();
+}
+function undoDone(cardId, badgeId){
+  const card  = document.getElementById(cardId);
+  const badge = document.getElementById(badgeId);
+  const btn   = card.querySelector('.mark-btn');
+  const num   = badgeId.replace('badge-','');
+  card.classList.remove('done');
+  badge.className = 'step-badge pending';
+  badge.textContent = num;
+  btn.className = 'mark-btn complete-btn';
+  btn.textContent = '✔ Done';
+  btn.onclick = ()=>markDone(cardId, badgeId);
+  doneCount = Math.max(0, doneCount-1);
+  updateProgress();
+}
+function updateProgress(){
+  const pct = Math.round((doneCount/total)*100);
+  document.getElementById('prog-fill').style.width = pct+'%';
+  document.getElementById('prog-pct').textContent  = pct+'%';
+  document.getElementById('prog-done-label').textContent = doneCount+' item'+(doneCount!==1?'s':'')+' done';
+  document.getElementById('progress-txt').textContent = doneCount+' of '+total+' items completed';
+}
+
+// ── Timers ─────────────────────────────────────────────────
+const timerState = {};
+
+function startTimer(id, allotted){
+  if(timerState[id] && timerState[id].running) return;
+  if(!timerState[id]) timerState[id] = { remaining: allotted, allotted };
+  if(timerState[id].remaining <= 0) timerState[id].remaining = 0;
+  timerState[id].running = true;
+  const el = document.getElementById('timer-'+id);
+  el.classList.add('running');
+  timerState[id].interval = setInterval(()=>{
+    timerState[id].remaining--;
+    const r = timerState[id].remaining;
+    if(r <= 0){
+      el.classList.remove('running');
+      el.classList.add('overtime');
+      el.textContent = 'TIME UP';
+      clearInterval(timerState[id].interval);
+      timerState[id].running = false;
+    } else {
+      const m = Math.floor(r/60), s = r%60;
+      el.textContent = pad(m)+':'+pad(s);
+      if(r <= 60) { el.classList.remove('running'); el.classList.add('overtime'); }
+    }
+  }, 1000);
+}
+function stopTimer(id){
+  if(timerState[id]) {
+    clearInterval(timerState[id].interval);
+    timerState[id].running = false;
+    const el = document.getElementById('timer-'+id);
+    el.classList.remove('running');
+  }
+}
+function resetTimer(id, allotted){
+  stopTimer(id);
+  timerState[id] = { remaining: allotted, allotted, running: false };
+  const el = document.getElementById('timer-'+id);
+  el.classList.remove('running','overtime');
+  const m = Math.floor(allotted/60), s = allotted%60;
+  el.textContent = pad(m)+':'+pad(s);
+}
+
+// ── Ideas Board ───────────────────────────────────────────
+let ideaCounter = 0;
+const catLabels = {
+  tech:'🔧 Tech / Tool', arch:'🏗 Architecture',
+  process:'📋 Process', risk:'⚠️ Risk', general:'💬 General'
+};
+
+function addIdea(){
+  const textEl   = document.getElementById('idea-text');
+  const authorEl = document.getElementById('idea-author');
+  const catEl    = document.getElementById('idea-cat');
+  const text   = textEl.value.trim();
+  const author = authorEl.value.trim() || 'Anonymous';
+  const cat    = catEl.value;
+  if(!text) { textEl.focus(); return; }
+  ideaCounter++;
+  const id = 'idea-'+ideaCounter;
+  const card = document.createElement('div');
+  card.className = 'idea-card '+cat;
+  card.id = id;
+  card.innerHTML = `
+    <button class="idea-delete" onclick="removeIdea('${id}')">✕</button>
+    <div class="idea-tag">${catLabels[cat]}</div>
+    <div class="idea-text">${escHtml(text)}</div>
+    <div class="idea-author">— ${escHtml(author)}</div>`;
+  document.getElementById('ideas-grid').appendChild(card);
+  textEl.value = ''; authorEl.value = '';
+  saveData();
+}
+function removeIdea(id){
+  const el = document.getElementById(id);
+  if(el) el.remove();
+  saveData();
+}
+
+// ── Action Items ──────────────────────────────────────────
+let actionCounter = 0;
+
+function addAction(){
+  const textEl  = document.getElementById('action-text');
+  const ownerEl = document.getElementById('action-owner');
+  const text  = textEl.value.trim();
+  const owner = ownerEl.value.trim() || 'TBD';
+  if(!text){ textEl.focus(); return; }
+  actionCounter++;
+  const id  = 'action-'+actionCounter;
+  const cbId= 'cb-'+id;
+  const item = document.createElement('div');
+  item.className = 'action-item';
+  item.id = id;
+  item.innerHTML = `
+    <input type="checkbox" id="${cbId}" onchange="toggleAction('${id}')"/>
+    <label for="${cbId}">${escHtml(text)}</label>
+    <span class="action-owner">${escHtml(owner)}</span>
+    <button class="action-del" onclick="removeAction('${id}')">✕</button>`;
+  document.getElementById('action-list').appendChild(item);
+  textEl.value = ''; ownerEl.value = '';
+  saveData();
+}
+function removeAction(id){
+  const el = document.getElementById(id);
+  if(el) el.remove();
+  saveData();
+}
+function toggleAction(id){
+  const item = document.getElementById(id);
+  const cb   = item.querySelector('input[type=checkbox]');
+  item.classList.toggle('checked', cb.checked);
+  saveData();
+}
+
+// ── Escape HTML ───────────────────────────────────────────
+function escHtml(s){
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// ── LocalStorage Persistence ──────────────────────────────
+function saveData(){
+  const data = { notes:{}, ideas:[], actions:[] };
+  for(let i=1;i<=10;i++){
+    const n = document.getElementById('notes-'+i);
+    if(n) data.notes[i] = n.value;
+  }
+  document.querySelectorAll('.idea-card').forEach(c=>{
+    data.ideas.push({
+      cat: [...c.classList].find(cl=>['tech','arch','process','risk','general'].includes(cl)),
+      text: c.querySelector('.idea-text').textContent,
+      author: c.querySelector('.idea-author').textContent.replace('— ','')
+    });
+  });
+  document.querySelectorAll('.action-item').forEach(a=>{
+    data.actions.push({
+      text: a.querySelector('label').textContent,
+      owner: a.querySelector('.action-owner').textContent,
+      checked: a.querySelector('input').checked
+    });
+  });
+  localStorage.setItem('g2_meeting_data', JSON.stringify(data));
+}
+function loadData(){
+  const raw = localStorage.getItem('g2_meeting_data');
+  if(!raw) return;
+  try {
+    const data = JSON.parse(raw);
+    if(data.notes) Object.entries(data.notes).forEach(([i,v])=>{
+      const el = document.getElementById('notes-'+i); if(el) el.value=v;
+    });
+    if(data.ideas) data.ideas.forEach(({cat,text,author})=>{
+      document.getElementById('idea-text').value   = text;
+      document.getElementById('idea-author').value = author;
+      document.getElementById('idea-cat').value    = cat||'general';
+      addIdea();
+    });
+    if(data.actions) data.actions.forEach(({text,owner,checked})=>{
+      document.getElementById('action-text').value  = text;
+      document.getElementById('action-owner').value = owner;
+      addAction();
+      if(checked){
+        const last = document.querySelector('#action-list .action-item:last-child');
+        if(last){ last.querySelector('input').checked=true; last.classList.add('checked'); }
+      }
+    });
+  } catch(e){}
+}
+
+// Auto-save notes on input
+document.addEventListener('input', e=>{
+  if(e.target.classList.contains('notes-area')) saveData();
+});
+
+// Load on startup + seed defaults if first visit
+window.addEventListener('DOMContentLoaded', ()=>{
+  if(!localStorage.getItem('g2_meeting_data')){
+    // Seed with starter action items
+    [
+      ['Set up team communication channel (Slack/Discord)', 'Team Leader'],
+      ['Create shared GitHub repository and invite all members', 'DevOps / Team Leader'],
+      ['Everyone: install Docker and clone the repo by next meeting', 'All Members'],
+      ['Draft system architecture diagram and share with team', 'Assigned Member'],
+      ['Decide PyTorch vs TensorFlow preference (poll in channel)', 'ML Engineer Lead'],
+    ].forEach(([t,o])=>{
+      document.getElementById('action-text').value  = t;
+      document.getElementById('action-owner').value = o;
+      addAction();
+    });
+    saveData();
+  } else {
+    loadData();
+  }
+});
+</script>
+</body>
+</html>
