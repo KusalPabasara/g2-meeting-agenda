@@ -4,7 +4,6 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>G2 Kickoff Meeting</title>
-  <script src="https://cdn.jsdelivr.net/npm/gun/gun.js"></script>
   <style>
     :root {
       --bg: #121212;
@@ -49,22 +48,34 @@
     .accordion-content { padding: 0 1.5rem; max-height: 0; overflow: hidden; transition: max-height 0.3s ease-out, padding 0.3s ease; background: var(--surface); color: #ccc; }
     .accordion-content.active { padding: 1.2rem 1.5rem; max-height: 500px; border-top: 1px solid var(--border); }
 
-    /* Ideas Feed */
-    .feed-block { background: var(--surface); padding: 1.5rem; border-radius: 8px; border: 1px solid var(--accent); margin-bottom: 2rem; }
-    .feed-block h2 { margin-top: 0; font-size: 1.4rem; border-bottom: 1px solid var(--border); padding-bottom: 0.5rem; margin-bottom: 0.5rem; color: #fff; }
-    .feed-info { color: #aaa; font-size: 0.95rem; margin-bottom: 1.2rem; }
-    .feed-input-row { display: flex; gap: 0.6rem; flex-wrap: wrap; margin-bottom: 1.2rem; }
-    .feed-input-row input[type=text] { background: #2a2a2a; border: 1px solid var(--border); color: #fff; padding: 0.75rem 1rem; border-radius: 6px; font-size: 1rem; font-family: inherit; outline: none; }
-    .feed-input-row input[type=text]:focus { border-color: var(--accent); }
-    #feed-name { width: 140px; flex-shrink: 0; }
-    #feed-idea { flex: 1; min-width: 180px; }
-    .send-btn { background: var(--accent); color: #000; border: none; padding: 0.75rem 1.5rem; border-radius: 6px; font-weight: bold; font-size: 1rem; cursor: pointer; white-space: nowrap; }
-    .send-btn:hover { opacity: 0.85; }
-    .feed-list { display: flex; flex-direction: column; gap: 0.6rem; max-height: 420px; overflow-y: auto; }
-    .feed-msg { background: #2a2a2a; border-left: 4px solid var(--accent); border-radius: 6px; padding: 0.75rem 1rem; animation: fadeIn 0.3s ease; }
-    .feed-msg .who { font-weight: bold; color: var(--accent); font-size: 0.9rem; margin-bottom: 0.25rem; }
-    .feed-msg .what { color: #e0e0e0; font-size: 1rem; line-height: 1.45; }
-    .feed-msg .when { color: #555; font-size: 0.78rem; margin-top: 0.3rem; }
+    /* Leader Script */
+    .script-block { margin-bottom: 2.5rem; }
+    .script-block > h2 { font-size: 1.4rem; border-bottom: 1px solid var(--border); padding-bottom: 0.5rem; margin-bottom: 1rem; color: #fff; }
+    .script-item { background: var(--surface); border: 1px solid var(--border); border-radius: 6px; margin-bottom: 0.8rem; overflow: hidden; }
+    .script-header { padding: 1.1rem 1.5rem; cursor: pointer; background: #1c2a1c; font-weight: bold; font-size: 1rem; display: flex; justify-content: space-between; align-items: center; user-select: none; color: #a3e8a3; }
+    .script-header:hover { background: #223022; }
+    .script-header .timing { font-size: 0.8rem; color: #4ade80; font-weight: normal; margin-left: 0.8rem; opacity: 0.8; }
+    .script-body { padding: 0 1.5rem; max-height: 0; overflow: hidden; transition: max-height 0.35s ease-out, padding 0.3s ease; background: #181f18; color: #ccc; font-size: 0.98rem; line-height: 1.75; }
+    .script-body.active { padding: 1.2rem 1.5rem; max-height: 800px; border-top: 1px solid #2a3a2a; }
+    .script-body p { margin: 0 0 0.7rem; }
+    .script-body .cue { color: #4ade80; font-weight: bold; }
+    .script-body ul { margin: 0.4rem 0 0.7rem 1.2rem; padding: 0; }
+    .script-body ul li { margin-bottom: 0.35rem; }
+
+    /* Minutes of Meeting */
+    .mom-block { background: var(--surface); padding: 1.5rem; border-radius: 8px; border: 1px solid #555; margin-bottom: 2rem; }
+    .mom-block h2 { margin-top: 0; font-size: 1.4rem; border-bottom: 1px solid var(--border); padding-bottom: 0.5rem; margin-bottom: 0.8rem; color: #fff; }
+    .mom-block p { color: #aaa; font-size: 0.93rem; margin-bottom: 1rem; }
+    .mom-input-row { display: flex; gap: 0.6rem; margin-bottom: 1rem; }
+    .mom-input-row input { flex: 1; background: #2a2a2a; border: 1px solid var(--border); color: #fff; padding: 0.75rem 1rem; border-radius: 6px; font-size: 1rem; font-family: inherit; outline: none; }
+    .mom-input-row input:focus { border-color: var(--accent); }
+    .mom-add-btn { background: #333; color: #e0e0e0; border: 1px solid #555; padding: 0.75rem 1.2rem; border-radius: 6px; font-size: 1rem; cursor: pointer; white-space: nowrap; }
+    .mom-add-btn:hover { background: #444; }
+    .mom-list { list-style: none; margin: 0; padding: 0; }
+    .mom-list li { background: #2a2a2a; border-left: 4px solid #888; border-radius: 5px; padding: 0.65rem 1rem; margin-bottom: 0.5rem; color: #e0e0e0; font-size: 0.97rem; display: flex; justify-content: space-between; align-items: flex-start; gap: 0.5rem; }
+    .mom-list li span { flex: 1; }
+    .mom-del { background: none; border: none; color: #555; cursor: pointer; font-size: 1rem; padding: 0; line-height: 1; flex-shrink: 0; }
+    .mom-del:hover { color: #e55; }
     @keyframes fadeIn { from { opacity:0; transform:translateY(-4px); } to { opacity:1; transform:translateY(0); } }
   </style>
 </head>
@@ -240,97 +251,189 @@
     </div>
   </div>
 
-  <!-- IDEAS FEED -->
-  <div class="feed-block">
-    <h2>Team Ideas &amp; Notes <span class="live-indicator" style="font-size:0.8rem;">&#9679; Live</span></h2>
-    <div class="feed-info">Type your name and your idea, then hit Send. Everyone's messages appear independently without overwriting each other. Refresh to load latest.</div>
-    <div class="feed-input-row">
-      <input type="text" id="feed-name" placeholder="Your name" maxlength="30"/>
-      <input type="text" id="feed-idea" placeholder="Type your idea or note here..." onkeydown="if(event.key==='Enter') sendIdea()"/>
-      <button class="send-btn" onclick="sendIdea()">Send</button>
+  <!-- LEADER SCRIPT -->
+  <div class="script-block">
+    <h2>Leader Script <span style="font-size:0.85rem; color:#666; font-weight:normal;">&mdash; For your eyes only. Click each block to read what to say.</span></h2>
+
+    <div class="script-item">
+      <div class="script-header" onclick="toggleScript('s1')">
+        Opening &amp; Welcome <span class="timing">~2 min</span><span style="margin-left:auto">+</span>
+      </div>
+      <div class="script-body" id="s1">
+        <p><span class="cue">Say this to start:</span></p>
+        <p>"Hey everyone, welcome to our first G2 meeting. My name is [your name] and I am leading this group. Today we are not here to solve everything — we are here to get on the same page, understand what our group is responsible for, and make a simple plan together. This will take about 30 minutes."</p>
+        <p>"Before we start, let me quickly tell you what Group 2 actually does in this project. We are the <strong>data and intelligence team</strong>. Think of the whole system like a human body — other groups build the hands, the face, the voice. We are the brain. We collect information, process it, and predict things that the rest of the system needs to work."</p>
+      </div>
     </div>
-    <div class="feed-list" id="feed-list"></div>
+
+    <div class="script-item">
+      <div class="script-header" onclick="toggleScript('s2')">
+        What is Our Job? (The 5 Tasks) <span class="timing">~6 min</span><span style="margin-left:auto">+</span>
+      </div>
+      <div class="script-body" id="s2">
+        <p><span class="cue">Walk through each task in simple words. Point to the map above.</span></p>
+        <p><strong>1. Data Ingestion &amp; Storage</strong> — "First, we need to collect raw data. For example, where is every bus right now? What time should it arrive? We pull all this data in and store it safely. Nothing else works if this is broken. This is our foundation."</p>
+        <p><strong>2. Stream &amp; Batch Processing</strong> — "Once data comes in, we process it. Some of it we process immediately — like a live GPS update. Some we process later in large amounts — like analysing last month's traffic patterns. Both are important."</p>
+        <p><strong>3. AI / ML ETA Models</strong> — "This is our most exciting task. We build a model that predicts when a bus will arrive. It learns from patterns — traffic, time of day, weather. The better our model, the more useful our whole system is."</p>
+        <p><strong>4. Prediction API</strong> — "Once our model works, we wrap it in an API. Think of an API as a door — other groups knock on it and ask 'when is Bus 47 arriving?' and we answer instantly. The frontend team depends on this."</p>
+        <p><strong>5. Data Validation</strong> — "We also need automatic checks. If a GPS says a bus is in the ocean, that's bad data. We catch and filter these problems before they break our models."</p>
+      </div>
+    </div>
+
+    <div class="script-item">
+      <div class="script-header" onclick="toggleScript('s3')">
+        Our Development Plan (4 Phases) <span class="timing">~5 min</span><span style="margin-left:auto">+</span>
+      </div>
+      <div class="script-body" id="s3">
+        <p><span class="cue">Keep it simple. You are not committing to exact dates yet — just explaining the logical order.</span></p>
+        <p>"We will build our work in four steps, one on top of the other:"</p>
+        <ul>
+          <li><strong>Phase 1 — Ingestion Pipelines:</strong> Set up the system to receive and store data. No data = no work possible.</li>
+          <li><strong>Phase 2 — Processing &amp; Quality Checks:</strong> Clean the data, filter bad values, run it through our pipeline reliably.</li>
+          <li><strong>Phase 3 — Model Training:</strong> Use the clean data to train our prediction model. Test it. Improve it.</li>
+          <li><strong>Phase 4 — API Serving:</strong> Publish the model as an API so other groups can call it from their apps.</li>
+        </ul>
+        <p>"We do not start Phase 3 until Phase 1 and 2 are solid. This order matters."</p>
+      </div>
+    </div>
+
+    <div class="script-item">
+      <div class="script-header" onclick="toggleScript('s4')">
+        Talking with Other Groups <span class="timing">~5 min</span><span style="margin-left:auto">+</span>
+      </div>
+      <div class="script-body" id="s4">
+        <p><span class="cue">This is critical. Other groups depend on us and we depend on them. Be clear about this.</span></p>
+        <p>"We cannot work in isolation. There are two conversations we need to have with other groups very soon:"</p>
+        <ul>
+          <li><strong>With the hardware / GPS team:</strong> We need to know exactly what format they will send us data in. What fields? How often? Over what connection? If we do not agree on this early, our pipeline will break when we connect.</li>
+          <li><strong>With the frontend / app team:</strong> They will call our prediction API. We need to agree on what our response looks like — what fields, what units, what speed. They cannot build their app until they know what to expect from us.</li>
+        </ul>
+        <p>"I will take responsibility for setting up these conversations. If anyone already has contacts in those groups, please tell me after this meeting."</p>
+      </div>
+    </div>
+
+    <div class="script-item">
+      <div class="script-header" onclick="toggleScript('s5')">
+        Assigning Roles <span class="timing">~6 min</span><span style="margin-left:auto">+</span>
+      </div>
+      <div class="script-body" id="s5">
+        <p><span class="cue">Ask, don't assign. See who is interested in what first.</span></p>
+        <p>"Now I want to hear from you. We have five areas of work. I do not want to just tell everyone what to do — I want the right person on the right task."</p>
+        <p>"Let me ask — does anyone have experience with databases or data pipelines? Anyone who has done machine learning before? Anyone comfortable building APIs?"</p>
+        <p><span class="cue">Listen. Take notes in the Minutes section below. Then suggest pairings.</span></p>
+        <p>"Here is what I suggest: we work in pairs or small groups per task, so no one is stuck alone. We will confirm assignments today and write them down."</p>
+      </div>
+    </div>
+
+    <div class="script-item">
+      <div class="script-header" onclick="toggleScript('s6')">
+        Innovation Ideas (Optional) <span class="timing">~3 min</span><span style="margin-left:auto">+</span>
+      </div>
+      <div class="script-body" id="s6">
+        <p><span class="cue">Keep this light — just plant the seed. Do not over-discuss today.</span></p>
+        <p>"Beyond our core tasks, there are some optional ideas we can explore if time allows during the project:"</p>
+        <ul>
+          <li><strong>Weather integration</strong> — adjust ETA predictions based on rain or extreme weather.</li>
+          <li><strong>Live dashboards</strong> — a visual screen showing real-time bus data for operators.</li>
+          <li><strong>Anomaly detection</strong> — automatically flag when something unusual happens, like a bus that is stuck for too long.</li>
+        </ul>
+        <p>"These are not required — but they could make our work stand out. We will revisit once Phase 1 is done."</p>
+      </div>
+    </div>
+
+    <div class="script-item">
+      <div class="script-header" onclick="toggleScript('s7')">
+        Closing &amp; Next Steps <span class="timing">~3 min</span><span style="margin-left:auto">+</span>
+      </div>
+      <div class="script-body" id="s7">
+        <p><span class="cue">End strong. Give clear actions. Leave people knowing exactly what happens next.</span></p>
+        <p>"We covered a lot today. Let me summarise what we are walking away with:"</p>
+        <ul>
+          <li>Everyone now understands what Group 2 does and why it matters.</li>
+          <li>We have a clear 4-phase development plan.</li>
+          <li>Roles have been discussed and will be confirmed.</li>
+          <li>We know which other groups we need to talk to first.</li>
+        </ul>
+        <p>"Before our next meeting, I ask everyone to: read over the task descriptions on this page, think about which area you want to contribute to, and start looking at tools — Kafka, Spark, Python, FastAPI."</p>
+        <p>"Any questions before we close? ... Great. Thank you all — let's build something good."</p>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- MINUTES OF MEETING -->
+  <div class="mom-block">
+    <h2>Minutes of Meeting</h2>
+    <p>Add key points, decisions, and action items as the discussion happens. Saved locally on your device.</p>
+    <div class="mom-input-row">
+      <input type="text" id="mom-input" placeholder="Type a decision, action item, or key point..." onkeydown="if(event.key==='Enter') addMOM()"/>
+      <button class="mom-add-btn" onclick="addMOM()">+ Add</button>
+    </div>
+    <ul class="mom-list" id="mom-list"></ul>
   </div>
 
 </div>
 
 <script>
+  // ── Accordion (task descriptions) ──
   function toggleAccordion(id) {
     const content = document.getElementById(id);
     const span = content.previousElementSibling.querySelector('span');
-    if (content.classList.contains('active')) {
-      content.classList.remove('active');
-      span.textContent = '+';
-    } else {
-      content.classList.add('active');
-      span.textContent = '-';
-    }
+    const isOpen = content.classList.contains('active');
+    content.classList.toggle('active', !isOpen);
+    span.textContent = isOpen ? '+' : '-';
   }
 
-  // Gun.js — each message is stored as a separate node so nothing overwrites anything.
-  const gun = Gun(['https://gun-manhattan.herokuapp.com/gun', 'https://relay.peer.ooo/gun']);
-  const feed = gun.get('g2-ideas-feed-v1');
-
-  const feedList = document.getElementById('feed-list');
-  const rendered = new Set();
-
-  function pad(n){ return String(n).padStart(2,'0'); }
-
-  function timeLabel(ts) {
-    const d = new Date(ts);
-    return pad(d.getHours()) + ':' + pad(d.getMinutes());
+  // ── Leader Script accordion ──
+  function toggleScript(id) {
+    const body = document.getElementById(id);
+    const span = body.previousElementSibling.querySelector('span:last-child');
+    const isOpen = body.classList.contains('active');
+    body.classList.toggle('active', !isOpen);
+    span.textContent = isOpen ? '+' : '-';
   }
 
-  function sendIdea() {
-    const nameEl = document.getElementById('feed-name');
-    const ideaEl = document.getElementById('feed-idea');
-    const name = nameEl.value.trim() || 'Anonymous';
-    const idea = ideaEl.value.trim();
-    if (!idea) { ideaEl.focus(); return; }
+  // ── Minutes of Meeting ──
+  const MOM_KEY = 'g2-mom-items';
 
-    const id = Date.now() + '-' + Math.random().toString(36).slice(2,7);
-    feed.get(id).put({ name, idea, ts: Date.now() });
-
-    // Remember name for convenience
-    localStorage.setItem('g2-feed-name', name);
-    ideaEl.value = '';
-    ideaEl.focus();
+  function loadMOM() {
+    const list = document.getElementById('mom-list');
+    list.innerHTML = '';
+    const items = JSON.parse(localStorage.getItem(MOM_KEY) || '[]');
+    items.forEach((text, i) => appendMOMItem(text, i));
   }
 
-  // Restore saved name
-  const savedName = localStorage.getItem('g2-feed-name');
-  if (savedName) document.getElementById('feed-name').value = savedName;
+  function appendMOMItem(text, index) {
+    const list = document.getElementById('mom-list');
+    const li = document.createElement('li');
+    li.innerHTML = '<span>' + escHtml(text) + '</span><button class="mom-del" onclick="deleteMOM(' + index + ')" title="Remove">&#10005;</button>';
+    list.appendChild(li);
+  }
 
-  // Listen for all messages — each fires independently, none overwrite each other
-  feed.map().on((msg, id) => {
-    if (!msg || !msg.idea || rendered.has(id)) return;
-    rendered.add(id);
+  function addMOM() {
+    const input = document.getElementById('mom-input');
+    const text = input.value.trim();
+    if (!text) { input.focus(); return; }
+    const items = JSON.parse(localStorage.getItem(MOM_KEY) || '[]');
+    items.push(text);
+    localStorage.setItem(MOM_KEY, JSON.stringify(items));
+    input.value = '';
+    input.focus();
+    loadMOM();
+  }
 
-    const el = document.createElement('div');
-    el.className = 'feed-msg';
-    el.innerHTML =
-      '<div class="who">' + escHtml(msg.name || 'Anonymous') + '</div>' +
-      '<div class="what">' + escHtml(msg.idea) + '</div>' +
-      '<div class="when">' + (msg.ts ? timeLabel(msg.ts) : '') + '</div>';
-
-    // Insert in chronological order
-    let inserted = false;
-    const items = feedList.querySelectorAll('.feed-msg[data-ts]');
-    el.dataset.ts = msg.ts || 0;
-    for (const item of items) {
-      if (Number(item.dataset.ts) > msg.ts) {
-        feedList.insertBefore(el, item);
-        inserted = true;
-        break;
-      }
-    }
-    if (!inserted) feedList.appendChild(el);
-    feedList.scrollTop = feedList.scrollHeight;
-  });
+  function deleteMOM(index) {
+    const items = JSON.parse(localStorage.getItem(MOM_KEY) || '[]');
+    items.splice(index, 1);
+    localStorage.setItem(MOM_KEY, JSON.stringify(items));
+    loadMOM();
+  }
 
   function escHtml(s) {
     return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
   }
+
+  loadMOM();
 </script>
 </body>
 </html>
