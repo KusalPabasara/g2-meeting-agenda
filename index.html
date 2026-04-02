@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>G2 Kickoff Meeting</title>
+  <script src="https://cdn.jsdelivr.net/npm/gun/gun.js"></script>
   <style>
     :root {
       --bg: #121212;
@@ -257,58 +258,31 @@
 
   const editor = document.getElementById('shared-notes');
 
-  // Simple, guaranteed real-time sync via jsonblob.com (free, no auth, CORS-enabled)
-  // Polls every 1.5 seconds — updates appear on all screens without any refresh.
-  const BLOB = 'https://jsonblob.com/api/jsonBlob/019d4e73-7953-786b-bd77-e88982b9731e';
+  // Gun.js — syncs on page load and when others write. Refresh to see latest.
+  const gun = Gun(['https://gun-manhattan.herokuapp.com/gun', 'https://relay.peer.ooo/gun']);
+  const doc = gun.get('g2-shared-workspace-document-v1');
 
-  let lastRemoteTs  = 0;
-  let writeTimer    = null;
-  let isWriting     = false;
-
-  // Load localStorage immediately so content shows instantly on page open
+  // Load localStorage immediately so content shows instantly
   const saved = localStorage.getItem('g2-notes-backup');
   if (saved) editor.value = saved;
 
-  // WRITE — debounced 400ms after last keystroke to avoid hammering the API
+  // Write to Gun on input
   editor.addEventListener('input', () => {
     const val = editor.value;
     localStorage.setItem('g2-notes-backup', val);
-    clearTimeout(writeTimer);
-    writeTimer = setTimeout(() => {
-      isWriting = true;
-      fetch(BLOB, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text: val, ts: Date.now() })
-      }).finally(() => { isWriting = false; });
-    }, 400);
+    doc.put({ text: val });
   });
 
-  // READ — poll every 1.5 seconds; update textarea only if remote is newer
-  async function poll() {
-    try {
-      const res  = await fetch(BLOB, { cache: 'no-store' });
-      const data = await res.json();
-      if (
-        data &&
-        typeof data.text === 'string' &&
-        data.ts > lastRemoteTs &&
-        data.text !== editor.value &&
-        !isWriting
-      ) {
-        lastRemoteTs = data.ts;
-        const start = editor.selectionStart;
-        const end   = editor.selectionEnd;
-        editor.value = data.text;
-        if (document.activeElement === editor) editor.setSelectionRange(start, end);
-        localStorage.setItem('g2-notes-backup', data.text);
-      }
-    } catch (e) {}
-    setTimeout(poll, 1500);
-  }
-
-  // Start polling immediately
-  poll();
+  // Read from Gun — fires on page load with stored value and on any peer update
+  doc.on((data) => {
+    if (data && typeof data.text === 'string' && data.text !== editor.value) {
+      const start = editor.selectionStart;
+      const end = editor.selectionEnd;
+      editor.value = data.text;
+      if (document.activeElement === editor) editor.setSelectionRange(start, end);
+      localStorage.setItem('g2-notes-backup', data.text);
+    }
+  });
 </script>
 </body>
 </html>
