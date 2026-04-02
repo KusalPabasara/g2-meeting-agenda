@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>G2 Kickoff Meeting</title>
+  <script src="https://cdn.jsdelivr.net/npm/gun/gun.js"></script>
   <style>
     :root {
       --bg: #121212;
@@ -47,6 +48,26 @@
     .accordion-header:hover { background: #2a2a2a; }
     .accordion-content { padding: 0 1.5rem; max-height: 0; overflow: hidden; transition: max-height 0.3s ease-out, padding 0.3s ease; background: var(--surface); color: #ccc; }
     .accordion-content.active { padding: 1.2rem 1.5rem; max-height: 500px; border-top: 1px solid var(--border); }
+
+    /* Tool tags */
+    .tool-row { display: flex; flex-wrap: wrap; gap: 0.4rem; margin: 0.5rem 0 0.8rem; }
+    .tool-tag { background: #0f2a1a; border: 1px solid #2d5a3d; color: #4ade80; font-size: 0.8rem; padding: 0.2rem 0.65rem; border-radius: 20px; font-family: monospace; }
+
+    /* Team Ideas Feed */
+    .ideas-block { background: var(--surface); padding: 1.5rem; border-radius: 8px; border: 1px solid #444; margin-bottom: 2rem; }
+    .ideas-block h2 { margin-top: 0; font-size: 1.4rem; border-bottom: 1px solid var(--border); padding-bottom: 0.5rem; margin-bottom: 0.6rem; color: #fff; }
+    .ideas-block p { color: #aaa; font-size: 0.93rem; margin-bottom: 1rem; }
+    .ideas-input-row { display: flex; gap: 0.6rem; flex-wrap: wrap; margin-bottom: 1rem; }
+    .ideas-input-row input { background: #2a2a2a; border: 1px solid var(--border); color: #fff; padding: 0.7rem 1rem; border-radius: 6px; font-size: 1rem; font-family: inherit; outline: none; }
+    .ideas-input-row input:focus { border-color: var(--accent); }
+    #idea-name { width: 130px; flex-shrink: 0; }
+    #idea-text { flex: 1; min-width: 180px; }
+    .idea-send-btn { background: var(--accent); color: #000; border: none; padding: 0.7rem 1.3rem; border-radius: 6px; font-weight: bold; font-size: 1rem; cursor: pointer; }
+    .idea-send-btn:hover { opacity: 0.85; }
+    .ideas-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 0.5rem; }
+    .ideas-list li { background: #2a2a2a; border-left: 4px solid var(--accent); border-radius: 5px; padding: 0.65rem 1rem; }
+    .ideas-list li .i-name { font-weight: bold; color: var(--accent); font-size: 0.88rem; margin-bottom: 0.2rem; }
+    .ideas-list li .i-text { color: #e0e0e0; font-size: 0.97rem; }
 
     /* Leader Script */
     .script-block { margin-bottom: 2.5rem; }
@@ -255,6 +276,7 @@
   <div class="script-block">
     <h2>Leader Script <span style="font-size:0.85rem; color:#666; font-weight:normal;">&mdash; For your eyes only. Click each block to read what to say.</span></h2>
 
+    <!-- S1: Opening -->
     <div class="script-item">
       <div class="script-header" onclick="toggleScript('s1')">
         Opening &amp; Welcome <span class="timing">~2 min</span><span style="margin-left:auto">+</span>
@@ -266,105 +288,165 @@
       </div>
     </div>
 
+    <!-- S2: The 5 Tasks with tools -->
     <div class="script-item">
       <div class="script-header" onclick="toggleScript('s2')">
-        What is Our Job? (The 5 Tasks) <span class="timing">~6 min</span><span style="margin-left:auto">+</span>
+        What is Our Job? (The 5 Tasks + Tools) <span class="timing">~7 min</span><span style="margin-left:auto">+</span>
       </div>
       <div class="script-body" id="s2">
-        <p><span class="cue">Walk through each task in simple words. Point to the map above.</span></p>
-        <p><strong>1. Data Ingestion &amp; Storage</strong> — "First, we need to collect raw data. For example, where is every bus right now? What time should it arrive? We pull all this data in and store it safely. Nothing else works if this is broken. This is our foundation."</p>
-        <p><strong>2. Stream &amp; Batch Processing</strong> — "Once data comes in, we process it. Some of it we process immediately — like a live GPS update. Some we process later in large amounts — like analysing last month's traffic patterns. Both are important."</p>
-        <p><strong>3. AI / ML ETA Models</strong> — "This is our most exciting task. We build a model that predicts when a bus will arrive. It learns from patterns — traffic, time of day, weather. The better our model, the more useful our whole system is."</p>
-        <p><strong>4. Prediction API</strong> — "Once our model works, we wrap it in an API. Think of an API as a door — other groups knock on it and ask 'when is Bus 47 arriving?' and we answer instantly. The frontend team depends on this."</p>
-        <p><strong>5. Data Validation</strong> — "We also need automatic checks. If a GPS says a bus is in the ocean, that's bad data. We catch and filter these problems before they break our models."</p>
+        <p><span class="cue">Walk through each task. After each one, show the tools we plan to use.</span></p>
+
+        <p><strong>1. Data Ingestion &amp; Storage</strong><br>
+        "First, we collect raw data — live GPS positions of buses, timetables, route info — and store it safely. Think of this as building the water tank. No water, nothing else works."</p>
+        <div class="tool-row">
+          <span class="tool-tag">Apache Kafka</span><span class="tool-tag">PostgreSQL</span><span class="tool-tag">MongoDB</span><span class="tool-tag">AWS S3</span>
+        </div>
+
+        <p><strong>2. Stream &amp; Batch Processing</strong><br>
+        "We handle data two ways. Stream = live, the moment it arrives, like a GPS ping updating every 5 seconds. Batch = in bulk, like processing a whole day's data overnight to find patterns."</p>
+        <div class="tool-row">
+          <span class="tool-tag">Apache Spark</span><span class="tool-tag">Apache Flink</span><span class="tool-tag">Python pandas</span>
+        </div>
+
+        <p><strong>3. AI / ML ETA Models</strong><br>
+        "This is our most valuable task. We build a model that learns from historical data — traffic patterns, time of day, weather — to predict when a bus will arrive. The smarter the model, the better our whole system."</p>
+        <div class="tool-row">
+          <span class="tool-tag">Python</span><span class="tool-tag">scikit-learn</span><span class="tool-tag">TensorFlow / PyTorch</span><span class="tool-tag">MLflow</span>
+        </div>
+
+        <p><strong>4. Prediction API</strong><br>
+        "Once the model works, we expose it as an API — a door other groups can knock on and ask: 'when is Bus 47 arriving at stop 12?' and we answer in under a second."</p>
+        <div class="tool-row">
+          <span class="tool-tag">FastAPI</span><span class="tool-tag">Docker</span><span class="tool-tag">REST / JSON</span>
+        </div>
+
+        <p><strong>5. Data Validation</strong><br>
+        "Automatic checks that catch bad data before it reaches the model. If a GPS reports a bus in the ocean, or a timestamp is impossible — we catch it and discard it."</p>
+        <div class="tool-row">
+          <span class="tool-tag">Great Expectations</span><span class="tool-tag">Pydantic</span><span class="tool-tag">Python</span>
+        </div>
       </div>
     </div>
 
+    <!-- S3: Do we collect data and train a model? -->
     <div class="script-item">
       <div class="script-header" onclick="toggleScript('s3')">
-        Our Development Plan (4 Phases) <span class="timing">~5 min</span><span style="margin-left:auto">+</span>
+        Do We Need to Collect Data and Train a Model? <span class="timing">~4 min</span><span style="margin-left:auto">+</span>
       </div>
       <div class="script-body" id="s3">
-        <p><span class="cue">Keep it simple. You are not committing to exact dates yet — just explaining the logical order.</span></p>
-        <p>"We will build our work in four steps, one on top of the other:"</p>
-        <ul>
-          <li><strong>Phase 1 — Ingestion Pipelines:</strong> Set up the system to receive and store data. No data = no work possible.</li>
-          <li><strong>Phase 2 — Processing &amp; Quality Checks:</strong> Clean the data, filter bad values, run it through our pipeline reliably.</li>
-          <li><strong>Phase 3 — Model Training:</strong> Use the clean data to train our prediction model. Test it. Improve it.</li>
-          <li><strong>Phase 4 — API Serving:</strong> Publish the model as an API so other groups can call it from their apps.</li>
-        </ul>
-        <p>"We do not start Phase 3 until Phase 1 and 2 are solid. This order matters."</p>
+        <p><span class="cue">A lot of non-technical members will wonder this. Answer it clearly and simply.</span></p>
+        <p>"Yes — and let me explain why both steps matter in plain English."</p>
+        <p><strong>Collecting data:</strong> "Imagine trying to predict the weather without ever having looked outside. You can't. To predict when a bus will arrive, we first need to observe — collect months of historical bus movements, delays, route timings, and traffic conditions. That data is our raw material."</p>
+        <p><strong>Training a model:</strong> "Once we have data, we feed it to a machine learning algorithm. The algorithm looks for patterns — 'Bus 12 is always 4 minutes late on rainy Monday mornings.' It learns these patterns so that next time it rains on a Monday, it automatically adjusts its prediction. We do not hard-code rules — the model figures them out itself from data."</p>
+        <p><strong>Then what?</strong> "Once trained and tested, we freeze the model and put it behind an API. Every time someone asks for an ETA, the model runs in milliseconds and returns its best prediction. It can be retrained later as we collect more data."</p>
+        <p><span class="cue">Pause. Ask: 'Does that make sense to everyone? Any questions on this?'</span></p>
       </div>
     </div>
 
+    <!-- S4: What makes G2 stand out -->
     <div class="script-item">
       <div class="script-header" onclick="toggleScript('s4')">
-        Talking with Other Groups <span class="timing">~5 min</span><span style="margin-left:auto">+</span>
+        What Makes Our Work Stand Out <span class="timing">~3 min</span><span style="margin-left:auto">+</span>
       </div>
       <div class="script-body" id="s4">
-        <p><span class="cue">This is critical. Other groups depend on us and we depend on them. Be clear about this.</span></p>
-        <p>"We cannot work in isolation. There are two conversations we need to have with other groups very soon:"</p>
+        <p><span class="cue">This is motivating. Say it with energy. Make the team feel proud of their role.</span></p>
+        <p>"Every other group depends on us. The mobile app, the display screens, the operator dashboard — none of them can show accurate information without our predictions. We are the engine under the hood."</p>
+        <p>"What makes a great G2 team stand out is not just making predictions — it is making <em>reliable, fast, and explainable</em> predictions. Here is what we can do to go beyond the basics:"</p>
         <ul>
-          <li><strong>With the hardware / GPS team:</strong> We need to know exactly what format they will send us data in. What fields? How often? Over what connection? If we do not agree on this early, our pipeline will break when we connect.</li>
-          <li><strong>With the frontend / app team:</strong> They will call our prediction API. We need to agree on what our response looks like — what fields, what units, what speed. They cannot build their app until they know what to expect from us.</li>
+          <li><strong>Use real-time weather data</strong> — adjust our ETA predictions dynamically when it starts raining or there is an event in the city.</li>
+          <li><strong>Build a live monitoring dashboard</strong> — a screen that shows the health of our pipeline and model accuracy in real time. No other group will have this.</li>
+          <li><strong>Add anomaly detection</strong> — automatically alert operators when something unusual is happening, like a bus that has been stationary for too long.</li>
+          <li><strong>Track model performance over time</strong> — use tools like MLflow to log every experiment and prove our model is improving. This shows professionalism and rigour.</li>
         </ul>
-        <p>"I will take responsibility for setting up these conversations. If anyone already has contacts in those groups, please tell me after this meeting."</p>
+        <p>"None of these are required for a pass. But together, they turn a good project into an impressive one."</p>
       </div>
     </div>
 
+    <!-- S5: Development Plan -->
     <div class="script-item">
       <div class="script-header" onclick="toggleScript('s5')">
-        Assigning Roles <span class="timing">~6 min</span><span style="margin-left:auto">+</span>
+        Our Development Plan (4 Phases) <span class="timing">~4 min</span><span style="margin-left:auto">+</span>
       </div>
       <div class="script-body" id="s5">
-        <p><span class="cue">Ask, don't assign. See who is interested in what first.</span></p>
-        <p>"Now I want to hear from you. We have five areas of work. I do not want to just tell everyone what to do — I want the right person on the right task."</p>
-        <p>"Let me ask — does anyone have experience with databases or data pipelines? Anyone who has done machine learning before? Anyone comfortable building APIs?"</p>
-        <p><span class="cue">Listen. Take notes in the Minutes section below. Then suggest pairings.</span></p>
-        <p>"Here is what I suggest: we work in pairs or small groups per task, so no one is stuck alone. We will confirm assignments today and write them down."</p>
+        <p><span class="cue">Keep it simple. You are not committing to exact dates yet — just the logical order.</span></p>
+        <p>"We will build our work in four steps, each one depending on the last:"</p>
+        <ul>
+          <li><strong>Phase 1 — Ingestion Pipelines:</strong> Set up the system to receive and store data. No data = no work possible.</li>
+          <li><strong>Phase 2 — Processing &amp; Quality Checks:</strong> Clean the data, filter bad values, make it reliable for training.</li>
+          <li><strong>Phase 3 — Model Training:</strong> Use the clean data to train our ETA prediction model. Test it. Improve it. Log results.</li>
+          <li><strong>Phase 4 — API Serving:</strong> Wrap the model in a FastAPI service so other groups can call it from their apps.</li>
+        </ul>
+        <p>"Phase 3 cannot start until Phases 1 and 2 are solid. This is not optional — garbage data produces garbage predictions."</p>
       </div>
     </div>
 
+    <!-- S6: Talking with other groups -->
     <div class="script-item">
       <div class="script-header" onclick="toggleScript('s6')">
-        Innovation Ideas (Optional) <span class="timing">~3 min</span><span style="margin-left:auto">+</span>
+        Talking with Other Groups <span class="timing">~4 min</span><span style="margin-left:auto">+</span>
       </div>
       <div class="script-body" id="s6">
-        <p><span class="cue">Keep this light — just plant the seed. Do not over-discuss today.</span></p>
-        <p>"Beyond our core tasks, there are some optional ideas we can explore if time allows during the project:"</p>
+        <p><span class="cue">This is critical. Be direct — delays here will block the whole project.</span></p>
+        <p>"We cannot work in isolation. Two urgent conversations need to happen this week:"</p>
         <ul>
-          <li><strong>Weather integration</strong> — adjust ETA predictions based on rain or extreme weather.</li>
-          <li><strong>Live dashboards</strong> — a visual screen showing real-time bus data for operators.</li>
-          <li><strong>Anomaly detection</strong> — automatically flag when something unusual happens, like a bus that is stuck for too long.</li>
+          <li><strong>With the hardware / GPS team:</strong> What format will they send us data in? What fields? How often — every second, every 10 seconds? Over what protocol? We need a written agreement on this before we build our pipeline.</li>
+          <li><strong>With the frontend / app team:</strong> They will call our API. We need to agree upfront — what does our response look like? What fields, what units, how fast do we respond? They cannot build their UI until we confirm this.</li>
         </ul>
-        <p>"These are not required — but they could make our work stand out. We will revisit once Phase 1 is done."</p>
+        <p>"I will set up these meetings. If anyone here already has contacts in those groups, please let me know right after this."</p>
       </div>
     </div>
 
+    <!-- S7: Assigning Roles -->
     <div class="script-item">
       <div class="script-header" onclick="toggleScript('s7')">
-        Closing &amp; Next Steps <span class="timing">~3 min</span><span style="margin-left:auto">+</span>
+        Assigning Roles <span class="timing">~4 min</span><span style="margin-left:auto">+</span>
       </div>
       <div class="script-body" id="s7">
-        <p><span class="cue">End strong. Give clear actions. Leave people knowing exactly what happens next.</span></p>
-        <p>"We covered a lot today. Let me summarise what we are walking away with:"</p>
+        <p><span class="cue">Ask, don't just assign. Use the Team Ideas section below to collect interest live.</span></p>
+        <p>"Now I want to hear from all of you. We have five task areas. I do not want to just hand out jobs — I want the right person on the right task."</p>
+        <p>"Let me ask — who has worked with databases before? Who has done any machine learning, even in a course? Who is comfortable with Python? Who wants to learn something completely new?"</p>
+        <p><span class="cue">Listen. Use the Team Ideas box below to capture answers. Then suggest pairings.</span></p>
+        <p>"My suggestion: we work in pairs per task so no one is stuck alone. We confirm assignments today and write them in the Minutes."</p>
+      </div>
+    </div>
+
+    <!-- S8: Closing -->
+    <div class="script-item">
+      <div class="script-header" onclick="toggleScript('s8')">
+        Closing &amp; Next Steps <span class="timing">~2 min</span><span style="margin-left:auto">+</span>
+      </div>
+      <div class="script-body" id="s8">
+        <p><span class="cue">End with clarity. Everyone should leave knowing exactly what they are doing next.</span></p>
+        <p>"We covered a lot today. Here is what we are walking away with:"</p>
         <ul>
-          <li>Everyone now understands what Group 2 does and why it matters.</li>
-          <li>We have a clear 4-phase development plan.</li>
-          <li>Roles have been discussed and will be confirmed.</li>
-          <li>We know which other groups we need to talk to first.</li>
+          <li>Everyone understands what G2 does and why we matter to the project.</li>
+          <li>We know the tools we will use for each task.</li>
+          <li>We understand why data collection and model training are both necessary.</li>
+          <li>We have a 4-phase plan and role assignments written down.</li>
+          <li>We know which other groups to contact first.</li>
         </ul>
-        <p>"Before our next meeting, I ask everyone to: read over the task descriptions on this page, think about which area you want to contribute to, and start looking at tools — Kafka, Spark, Python, FastAPI."</p>
-        <p>"Any questions before we close? ... Great. Thank you all — let's build something good."</p>
+        <p>"Before the next meeting: look at the tools listed for your task area, set up your environment, and do one small experiment if you can. Any questions? ... Great. Let us build something impressive."</p>
       </div>
     </div>
 
   </div>
 
+  <!-- TEAM IDEAS -->
+  <div class="ideas-block">
+    <h2>Team Ideas</h2>
+    <p>Everyone can drop their name and idea here during the meeting. Each message is saved separately — no one overwrites anyone else. Refresh to see all ideas.</p>
+    <div class="ideas-input-row">
+      <input type="text" id="idea-name" placeholder="Your name" maxlength="30"/>
+      <input type="text" id="idea-text" placeholder="Your idea or question..." onkeydown="if(event.key==='Enter') sendIdea()"/>
+      <button class="idea-send-btn" onclick="sendIdea()">Send</button>
+    </div>
+    <ul class="ideas-list" id="ideas-list"></ul>
+  </div>
+
   <!-- MINUTES OF MEETING -->
   <div class="mom-block">
     <h2>Minutes of Meeting</h2>
-    <p>Add key points, decisions, and action items as the discussion happens. Saved locally on your device.</p>
+    <p>Add key decisions and action items as the discussion happens. Saved locally on your device.</p>
     <div class="mom-input-row">
       <input type="text" id="mom-input" placeholder="Type a decision, action item, or key point..." onkeydown="if(event.key==='Enter') addMOM()"/>
       <button class="mom-add-btn" onclick="addMOM()">+ Add</button>
@@ -392,6 +474,35 @@
     body.classList.toggle('active', !isOpen);
     span.textContent = isOpen ? '+' : '-';
   }
+
+  // ── Team Ideas (Gun.js) ──
+  const gun = Gun(['https://gun-manhattan.herokuapp.com/gun', 'https://relay.peer.ooo/gun']);
+  const ideasFeed = gun.get('g2-ideas-feed-v2');
+  const rendered = new Set();
+
+  const savedName = localStorage.getItem('g2-idea-name');
+  if (savedName) document.getElementById('idea-name').value = savedName;
+
+  function sendIdea() {
+    const nameEl = document.getElementById('idea-name');
+    const textEl = document.getElementById('idea-text');
+    const name = nameEl.value.trim() || 'Anonymous';
+    const text = textEl.value.trim();
+    if (!text) { textEl.focus(); return; }
+    const id = Date.now() + '-' + Math.random().toString(36).slice(2, 6);
+    ideasFeed.get(id).put({ name, text, ts: Date.now() });
+    localStorage.setItem('g2-idea-name', name);
+    textEl.value = '';
+    textEl.focus();
+  }
+
+  ideasFeed.map().on((msg, id) => {
+    if (!msg || !msg.text || rendered.has(id)) return;
+    rendered.add(id);
+    const li = document.createElement('li');
+    li.innerHTML = '<div class="i-name">' + escHtml(msg.name || 'Anonymous') + '</div><div class="i-text">' + escHtml(msg.text) + '</div>';
+    document.getElementById('ideas-list').appendChild(li);
+  });
 
   // ── Minutes of Meeting ──
   const MOM_KEY = 'g2-mom-items';
