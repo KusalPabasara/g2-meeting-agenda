@@ -466,6 +466,70 @@
     <p>Curated links directly relevant to our 5 task areas. Click any card to open. Share with the team when ready.</p>
 
     <div class="res-category">
+      <h3>Where to Get Data — Sri Lanka Specific</h3>
+      <div class="res-cards">
+        <a class="res-card" href="https://data.gov.lk/" target="_blank">
+          <div class="rc-type rc-tool">Dataset Portal &middot; Government of Sri Lanka</div>
+          <div class="rc-title">data.gov.lk — Sri Lanka Open Data Portal</div>
+          <div class="rc-desc">Official government open data portal. Search for transport, roads, and bus datasets. Start here — any publicly released NTC or SLTB data will be here.</div>
+        </a>
+        <a class="res-card" href="https://www.mdpi.com/2306-5729/10/8/119" target="_blank">
+          <div class="rc-type rc-paper">Dataset Paper &middot; MDPI 2025</div>
+          <div class="rc-title">From Raw GPS to GTFS: A Real-World Open Dataset for Bus Travel Time (Sri Lanka)</div>
+          <div class="rc-desc">A real GPS-collected bus dataset from Sri Lanka published as open data — includes routes, stop times, and travel time logs. Directly usable for training our ETA model.</div>
+        </a>
+        <a class="res-card" href="https://mobilitydatabase.org/" target="_blank">
+          <div class="rc-type rc-tool">Dataset Portal &middot; Global GTFS Catalog</div>
+          <div class="rc-title">Mobility Database — Global GTFS Feed Catalog</div>
+          <div class="rc-desc">Search for Sri Lanka GTFS feeds (bus schedules, stops, routes in standard format). Over 6000 transit feeds worldwide. Filter by country to find local feeds.</div>
+        </a>
+        <a class="res-card" href="https://dl.lib.uom.lk/items/9e8da31f-79c7-47a6-b96f-aa0ffbd51f36" target="_blank">
+          <div class="rc-type rc-paper">Research &middot; University of Moratuwa</div>
+          <div class="rc-title">Development of GTFS Data for Sri Lanka</div>
+          <div class="rc-desc">Moratuwa University research on building GTFS-format transit data for Sri Lanka. Explains how local bus schedules were digitised — useful background before using the dataset.</div>
+        </a>
+        <a class="res-card" href="https://www.researchgate.net/publication/387256214_Evaluation_of_machine_learning_models_for_bus_travel_time_prediction" target="_blank">
+          <div class="rc-type rc-paper">Research Paper &middot; ResearchGate</div>
+          <div class="rc-title">Evaluation of ML Models for Bus Travel Time — Sri Lanka Context</div>
+          <div class="rc-desc">Evaluates ML models specifically for Sri Lanka's heterogeneous, lane-less traffic. Tells us which models perform best in our exact local conditions.</div>
+        </a>
+        <a class="res-card" href="https://www.researchgate.net/publication/378201695_An_Improved_Bus_Travel_Time_Prediction_Using_Multi-Model_Ensemble_Approach_for_Heterogeneous_Traffic_Conditions" target="_blank">
+          <div class="rc-type rc-paper">Research Paper &middot; ResearchGate</div>
+          <div class="rc-title">Improved Bus Travel Time Prediction — Heterogeneous Traffic (Sri Lanka)</div>
+          <div class="rc-desc">Uses an ensemble approach for Sri Lanka's mixed traffic. Notes that dwell times vary significantly spatially and temporally — key insight for our feature engineering.</div>
+        </a>
+        <a class="res-card" href="https://gtfs.org/resources/data/" target="_blank">
+          <div class="rc-type rc-tool">Resource &middot; GTFS.org</div>
+          <div class="rc-title">GTFS Data Resources — Global Index</div>
+          <div class="rc-desc">Central index of GTFS datasets worldwide. Use this if Mobility Database doesn't have a specific Sri Lanka feed — links to all known GTFS sources globally.</div>
+        </a>
+        <a class="res-card" href="https://download.geofabrik.de/asia/sri-lanka.html" target="_blank">
+          <div class="rc-type rc-tool">Dataset &middot; Geofabrik / OpenStreetMap</div>
+          <div class="rc-title">OpenStreetMap — Sri Lanka Road &amp; Route Data</div>
+          <div class="rc-desc">Free download of all Sri Lanka roads, stops, and route geometry from OpenStreetMap. Useful for building route features and maps for our model.</div>
+        </a>
+      </div>
+    </div>
+
+    <div class="res-category">
+      <h3>How to Get Data and Train the Model — Step by Step</h3>
+      <div class="res-cards" style="grid-template-columns: 1fr;">
+        <div class="res-card" style="border-color: #2d5a3d; cursor:default;">
+          <div class="rc-type rc-tool">Our Plan — Plain English</div>
+          <div class="rc-title" style="font-size:1rem; margin-bottom:0.6rem;">How G2 Will Get Data and Build the ETA Model</div>
+          <div class="rc-desc" style="font-size:0.9rem; color:#ccc; line-height:1.8;">
+            <strong style="color:#4ade80;">Step 1 — Get the data.</strong> Download the open GPS dataset from the MDPI paper above (real Sri Lanka bus data). Also check data.gov.lk for any NTC/SLTB published datasets. If both are limited, we simulate data using GTFS schedules + add noise to represent real delays.<br><br>
+            <strong style="color:#4ade80;">Step 2 — Understand what's in it.</strong> A bus dataset typically has: timestamp, bus ID, GPS coordinates (lat/lng), route number, stop name, actual arrival time, scheduled arrival time. We use the difference between actual and scheduled as our prediction target (the "delay").<br><br>
+            <strong style="color:#4ade80;">Step 3 — Clean and prepare it.</strong> Remove rows where GPS is clearly wrong (bus in ocean, impossible speed). Fill missing values. Convert timestamps to useful features: hour of day, day of week, is it rush hour, is it a weekday. This is Phase 2 of our plan.<br><br>
+            <strong style="color:#4ade80;">Step 4 — Train the model.</strong> Feed the clean data into scikit-learn. Try a simple model first (Random Forest or Gradient Boosting). The model learns: "given this route, this time of day, this current delay — what will the arrival delay be?" Log every experiment in MLflow.<br><br>
+            <strong style="color:#4ade80;">Step 5 — Test it.</strong> Split data: 80% for training, 20% for testing. Measure Mean Absolute Error (MAE) — how many minutes off is our prediction on average? A good starting target is under 3 minutes MAE for Sri Lanka city conditions.<br><br>
+            <strong style="color:#4ade80;">Step 6 — Serve it.</strong> Once the model is good enough, wrap it in a FastAPI endpoint. Other groups call it with a route number and current time and get back a predicted arrival time.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="res-category">
       <h3>Research Papers — Bus ETA &amp; Prediction</h3>
       <div class="res-cards">
         <a class="res-card" href="https://arxiv.org/abs/2303.15495" target="_blank">
