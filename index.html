@@ -28,37 +28,28 @@
     h1 { color: var(--accent); margin-bottom: 0.5rem; font-size: 2rem; }
     .subtitle { color: #888; margin-bottom: 2rem; font-size: 1.1rem; }
     
-    .agenda {
-      background: var(--surface);
-      padding: 1.5rem 2rem;
-      border-radius: 8px;
-      border: 1px solid var(--border);
-      margin-bottom: 2rem;
-    }
-    .agenda h2 { margin-top: 0; font-size: 1.4rem; border-bottom: 1px solid var(--border); padding-bottom: 0.8rem; margin-bottom: 1rem; }
-    .agenda ul { padding-left: 1.2rem; margin: 0; }
-    .agenda li { margin-bottom: 1rem; font-size: 1.1rem; }
-    .agenda li strong { color: #fff; }
-
-    .live-board {
-      background: var(--surface);
-      padding: 1.5rem 2rem;
-      border-radius: 8px;
-      border: 1px solid var(--border);
-    }
-    .live-board h2 { margin-top: 0; font-size: 1.4rem; display: flex; justify-content: space-between; align-items: center; }
-    .live-indicator { font-size: 0.9rem; color: var(--accent); animation: blink 2s infinite; font-weight: normal; }
+    .live-indicator { font-size: 0.9rem; color: var(--accent); animation: blink 2s infinite; font-weight: normal; margin-left: 10px;}
     @keyframes blink { 50% { opacity: 0.5; } }
 
-    .input-group { display: flex; gap: 0.5rem; margin-bottom: 1.5rem; margin-top: 1rem; }
+    .task-block {
+      background: var(--surface);
+      padding: 1.5rem 2rem;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      margin-bottom: 1.5rem;
+    }
+    .task-block h2 { margin-top: 0; font-size: 1.3rem; border-bottom: 1px solid var(--border); padding-bottom: 0.5rem; margin-bottom: 0.5rem; color: #fff; }
+    .task-desc { color: #aaa; margin-bottom: 1rem; font-size: 1.05rem; }
+
+    .input-group { display: flex; gap: 0.5rem; margin-bottom: 1.5rem; margin-top: 0.5rem; }
     input {
       flex: 1;
       background: #2a2a2a;
       border: 1px solid var(--border);
       color: white;
-      padding: 1rem;
+      padding: 0.8rem 1rem;
       border-radius: 6px;
-      font-size: 1.1rem;
+      font-size: 1rem;
     }
     input:focus { outline: none; border-color: var(--accent); }
     button {
@@ -68,15 +59,15 @@
       padding: 0 1.5rem;
       border-radius: 6px;
       font-weight: bold;
-      font-size: 1.1rem;
+      font-size: 1rem;
       cursor: pointer;
     }
     button:hover { opacity: 0.9; }
 
-    .idea-list { display: flex; flex-direction: column; gap: 0.8rem; }
+    .idea-list { display: flex; flex-direction: column; gap: 0.6rem; }
     .idea-item {
       background: #2a2a2a;
-      padding: 1rem;
+      padding: 0.8rem 1rem;
       border-radius: 6px;
       border-left: 4px solid var(--accent);
       display: flex;
@@ -85,12 +76,12 @@
       animation: fadeIn 0.3s ease;
     }
     @keyframes fadeIn { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
-    .idea-text { word-break: break-word; font-size: 1.1rem; }
+    .idea-text { word-break: break-word; font-size: 1.05rem; }
     .delete-btn {
       background: transparent;
       color: #ff6b6b;
       padding: 0.2rem 0.5rem;
-      font-size: 1.5rem;
+      font-size: 1.3rem;
       border: none;
       cursor: pointer;
     }
@@ -99,100 +90,130 @@
 </head>
 <body>
   <div class="container">
-    <h1>G2 Kickoff Meeting</h1>
-    <div class="subtitle">Public Transport System - Data & Intelligence</div>
+    <h1>G2 Kickoff Meeting <span class="live-indicator">● Live Sync Active</span></h1>
+    <div class="subtitle">Public Transport System - Data & Intelligence. Discuss and drop ideas below.</div>
 
-    <div class="agenda">
-      <h2>Today's Quick Agenda</h2>
-      <ul>
-        <li><strong>1. Introductions</strong> — Quick round of names & strong skills.</li>
-        <li><strong>2. Our Scope</strong> — We handle Data Ingestion, ML (ETA Prediction), Analytics, and Validation.</li>
-        <li><strong>3. Tech Stack Check</strong> — PyTorch vs TensorFlow? Kafka? PostgreSQL? Who knows what?</li>
-        <li><strong>4. Roles</strong> — Who wants to do ML? Data pipelines? APIs?</li>
-        <li><strong>5. Next Steps</strong> — Setup GitHub, Discord/WhatsApp group, install Docker.</li>
-      </ul>
-    </div>
-
-    <div class="live-board">
-      <h2>
-        Live Ideas & Notes
-        <span class="live-indicator">● Live Sync</span>
-      </h2>
-      <p style="font-size: 0.95rem; color: #888; margin-top: -5px; margin-bottom: 0;">Share this link with the team. Everyone can type here and it syncs instantly across all screens.</p>
-      
+    <!-- TASK 1 -->
+    <div class="task-block">
+      <h2>1. Introductions</h2>
+      <div class="task-desc">Quick round of names, course/year, and strongest technical skills.</div>
       <div class="input-group">
-        <input type="text" id="idea-input" placeholder="Type a note, idea, or task..." onkeypress="if(event.key==='Enter') addIdea()">
-        <button onclick="addIdea()">Add</button>
+        <input type="text" id="input-1" placeholder="E.g., Kusal - Good at Python and APIs" onkeypress="if(event.key==='Enter') addIdea('1')">
+        <button onclick="addIdea('1')">Add</button>
       </div>
-
-      <div class="idea-list" id="ideas-container">
-        <!-- Ideas will appear here automatically -->
-      </div>
+      <div class="idea-list" id="list-1"></div>
     </div>
+
+    <!-- TASK 2 -->
+    <div class="task-block">
+      <h2>2. Our Scope</h2>
+      <div class="task-desc">Data Ingestion, ML (ETA Prediction), Analytics, and Validation. Any thoughts on boundaries?</div>
+      <div class="input-group">
+        <input type="text" id="input-2" placeholder="Ideas for our scope..." onkeypress="if(event.key==='Enter') addIdea('2')">
+        <button onclick="addIdea('2')">Add</button>
+      </div>
+      <div class="idea-list" id="list-2"></div>
+    </div>
+
+    <!-- TASK 3 -->
+    <div class="task-block">
+      <h2>3. Tech Stack Check</h2>
+      <div class="task-desc">PyTorch vs TensorFlow? Kafka for streams? PostgreSQL vs InfluxDB?</div>
+      <div class="input-group">
+        <input type="text" id="input-3" placeholder="I prefer PyTorch because..." onkeypress="if(event.key==='Enter') addIdea('3')">
+        <button onclick="addIdea('3')">Add</button>
+      </div>
+      <div class="idea-list" id="list-3"></div>
+    </div>
+
+    <!-- TASK 4 -->
+    <div class="task-block">
+      <h2>4. Roles Assignment</h2>
+      <div class="task-desc">Who wants to handle ML models? Data Pipelines? FastAPI? Validation?</div>
+      <div class="input-group">
+        <input type="text" id="input-4" placeholder="I can take the API side..." onkeypress="if(event.key==='Enter') addIdea('4')">
+        <button onclick="addIdea('4')">Add</button>
+      </div>
+      <div class="idea-list" id="list-4"></div>
+    </div>
+
+    <!-- TASK 5 -->
+    <div class="task-block">
+      <h2>5. Next Steps</h2>
+      <div class="task-desc">Setup GitHub, create comms group (WhatsApp/Discord), install tools.</div>
+      <div class="input-group">
+        <input type="text" id="input-5" placeholder="Let's use Discord for comms..." onkeypress="if(event.key==='Enter') addIdea('5')">
+        <button onclick="addIdea('5')">Add</button>
+      </div>
+      <div class="idea-list" id="list-5"></div>
+    </div>
+
   </div>
 
   <script>
-    // Initialize Gun.js with free public relays for zero-config real-time sync
+    // Initialize Gun.js
     const gun = Gun(['https://gun-manhattan.herokuapp.com/gun', 'https://relay.peer.ooo/gun']);
     
-    // Unique namespace for this specific project board so it doesn't collide
-    const board = gun.get('g2-transport-kickoff-board-v2');
+    // Create a new fresh namespace for this block-based version
+    const app = gun.get('g2-kickoff-per-task-v1');
+    const tasks = ['1', '2', '3', '4', '5'];
 
-    const container = document.getElementById('ideas-container');
-    const input = document.getElementById('idea-input');
-
-    // Quick UUID generator
     function uuid() {
       return Math.random().toString(36).substring(2) + Date.now().toString(36);
     }
 
-    function addIdea() {
+    function addIdea(taskId) {
+      const input = document.getElementById('input-' + taskId);
       const text = input.value.trim();
       if (!text) return;
       
       const id = uuid();
-      board.get(id).put({ text: text, time: Date.now(), active: true });
+      // Save under the specific task's node
+      app.get('task-' + taskId).get(id).put({ text: text, time: Date.now(), active: true });
       input.value = '';
     }
 
-    function removeIdea(id) {
-      board.get(id).put({ active: false });
+    function removeIdea(taskId, ideaId) {
+      app.get('task-' + taskId).get(ideaId).put({ active: false });
     }
 
-    // Listen for real-time updates from anyone connected
-    board.map().on((idea, id) => {
-      if (!idea) return;
+    // Attach listeners for each task block
+    tasks.forEach(taskId => {
+      const container = document.getElementById('list-' + taskId);
       
-      let el = document.getElementById(id);
-      
-      // If idea was deleted/marked inactive by someone
-      if (!idea.active) {
-        if (el) el.remove();
-        return;
-      }
-
-      // If it's active and element doesn't exist on this screen, create it
-      if (!el && idea.text) {
-        el = document.createElement('div');
-        el.className = 'idea-item';
-        el.id = id;
+      app.get('task-' + taskId).map().on((idea, id) => {
+        if (!idea) return;
         
-        const textSpan = document.createElement('span');
-        textSpan.className = 'idea-text';
-        textSpan.textContent = idea.text;
+        let el = document.getElementById('idea-' + id);
         
-        const delBtn = document.createElement('button');
-        delBtn.className = 'delete-btn';
-        delBtn.innerHTML = '×';
-        delBtn.title = 'Delete for everyone';
-        delBtn.onclick = () => removeIdea(id);
+        // Handle deletion
+        if (!idea.active) {
+          if (el) el.remove();
+          return;
+        }
 
-        el.appendChild(textSpan);
-        el.appendChild(delBtn);
+        // Render new item
+        if (!el && idea.text) {
+          el = document.createElement('div');
+          el.className = 'idea-item';
+          el.id = 'idea-' + id;
+          
+          const textSpan = document.createElement('span');
+          textSpan.className = 'idea-text';
+          textSpan.textContent = idea.text;
+          
+          const delBtn = document.createElement('button');
+          delBtn.className = 'delete-btn';
+          delBtn.innerHTML = '×';
+          delBtn.title = 'Delete for everyone';
+          delBtn.onclick = () => removeIdea(taskId, id);
 
-        // Add to top of list
-        container.prepend(el);
-      }
+          el.appendChild(textSpan);
+          el.appendChild(delBtn);
+
+          container.prepend(el); // add to top
+        }
+      });
     });
   </script>
 </body>
