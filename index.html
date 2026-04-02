@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>G2 Kickoff Meeting</title>
   <script src="https://cdn.jsdelivr.net/npm/gun/gun.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
   <style>
     :root {
       --bg: #121212;
@@ -22,7 +23,7 @@
       line-height: 1.5;
     }
     .container {
-      max-width: 800px;
+      max-width: 900px;
       margin: 0 auto;
     }
     h1 { color: var(--accent); margin-bottom: 0.5rem; font-size: 2rem; }
@@ -30,6 +31,16 @@
     
     .live-indicator { font-size: 0.9rem; color: var(--accent); animation: blink 2s infinite; font-weight: normal; margin-left: 10px;}
     @keyframes blink { 50% { opacity: 0.5; } }
+
+    .map-block {
+      background: #1a1a1a;
+      padding: 1.5rem;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      margin-bottom: 2.5rem;
+      overflow-x: auto;
+    }
+    .map-block h2 { margin-top: 0; font-size: 1.4rem; border-bottom: 1px solid var(--border); padding-bottom: 0.5rem; margin-bottom: 1rem; color: #fff; }
 
     .task-block {
       background: var(--surface);
@@ -93,6 +104,41 @@
     <h1>G2 Kickoff Meeting <span class="live-indicator">● Live Sync Active</span></h1>
     <div class="subtitle">Public Transport System - Data & Intelligence. Discuss and drop ideas below.</div>
 
+    <!-- MAP/CHART BLOCK -->
+    <div class="map-block">
+      <h2>🗺️ G2 Scope & Innovation Map</h2>
+      <p style="color: #aaa; font-size: 0.95rem; margin-top: -10px; margin-bottom: 1.5rem;">Visual breakdown of our strict "Must-Do" requirements vs. "Beyond" ideas we can brainstorm to stand out.</p>
+      
+      <div class="mermaid" style="text-align: center;">
+        graph LR
+          G2[🚌 G2: Data & Intelligence] --> Core[✅ Core Must-Do Tasks]
+          G2 --> Extra[💡 Beyond Assignment Ideas]
+
+          Core --> Ingest[Data Ingestion & Storage]
+          Core --> Process[Stream & Batch Processing]
+          Core --> ML[AI/ML: ETA Prediction Models]
+          Core --> Analytics[Prediction API & Analytics]
+          Core --> Valid[Data Validation & Quality]
+
+          Extra --> Wx[Weather-Aware ETA Modeling]
+          Extra --> Crowd[Crowdsourced Delay Reports]
+          Extra --> Anomaly[Anomaly/Accident Detection]
+          Extra --> Dash[Live Performance Dashboard]
+
+          classDef main fill:#4ade80,stroke:#fff,stroke-width:2px,color:#000,font-weight:bold;
+          classDef core fill:#3b82f6,stroke:#fff,stroke-width:2px,color:#fff,font-weight:bold;
+          classDef extra fill:#f59e0b,stroke:#fff,stroke-width:2px,color:#000,font-weight:bold;
+          classDef subcore fill:#1e3a8a,stroke:#3b82f6,stroke-width:1px,color:#fff;
+          classDef subextra fill:#78350f,stroke:#f59e0b,stroke-width:1px,color:#fff,stroke-dasharray: 5 5;
+
+          class G2 main;
+          class Core core;
+          class Extra extra;
+          class Ingest,Process,ML,Analytics,Valid subcore;
+          class Wx,Crowd,Anomaly,Dash subextra;
+      </div>
+    </div>
+
     <!-- TASK 1 -->
     <div class="task-block">
       <h2>1. Introductions</h2>
@@ -106,10 +152,10 @@
 
     <!-- TASK 2 -->
     <div class="task-block">
-      <h2>2. Our Scope</h2>
-      <div class="task-desc">Data Ingestion, ML (ETA Prediction), Analytics, and Validation. Any thoughts on boundaries?</div>
+      <h2>2. Our Scope & Ideas</h2>
+      <div class="task-desc">Refer to the map above! What extra "Beyond" ideas should we actually build to stand out?</div>
       <div class="input-group">
-        <input type="text" id="input-2" placeholder="Ideas for our scope..." onkeypress="if(event.key==='Enter') addIdea('2')">
+        <input type="text" id="input-2" placeholder="Let's build the weather integration..." onkeypress="if(event.key==='Enter') addIdea('2')">
         <button onclick="addIdea('2')">Add</button>
       </div>
       <div class="idea-list" id="list-2"></div>
@@ -151,11 +197,12 @@
   </div>
 
   <script>
-    // Initialize Gun.js
+    // Initialize Mermaid for the flow chart
+    mermaid.initialize({ startOnLoad: true, theme: 'dark' });
+
+    // Initialize Gun.js for real-time sync
     const gun = Gun(['https://gun-manhattan.herokuapp.com/gun', 'https://relay.peer.ooo/gun']);
-    
-    // Create a new fresh namespace for this block-based version
-    const app = gun.get('g2-kickoff-per-task-v1');
+    const app = gun.get('g2-kickoff-per-task-v2');
     const tasks = ['1', '2', '3', '4', '5'];
 
     function uuid() {
@@ -168,7 +215,6 @@
       if (!text) return;
       
       const id = uuid();
-      // Save under the specific task's node
       app.get('task-' + taskId).get(id).put({ text: text, time: Date.now(), active: true });
       input.value = '';
     }
@@ -177,7 +223,6 @@
       app.get('task-' + taskId).get(ideaId).put({ active: false });
     }
 
-    // Attach listeners for each task block
     tasks.forEach(taskId => {
       const container = document.getElementById('list-' + taskId);
       
@@ -186,13 +231,11 @@
         
         let el = document.getElementById('idea-' + id);
         
-        // Handle deletion
         if (!idea.active) {
           if (el) el.remove();
           return;
         }
 
-        // Render new item
         if (!el && idea.text) {
           el = document.createElement('div');
           el.className = 'idea-item';
@@ -211,7 +254,7 @@
           el.appendChild(textSpan);
           el.appendChild(delBtn);
 
-          container.prepend(el); // add to top
+          container.prepend(el);
         }
       });
     });
