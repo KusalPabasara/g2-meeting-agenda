@@ -27,7 +27,7 @@
       margin: 0 auto;
     }
     h1 { color: var(--accent); margin-bottom: 0.5rem; font-size: 2rem; }
-    .subtitle { color: #888; margin-bottom: 2rem; font-size: 1.1rem; }
+    .subtitle { color: #888; margin-bottom: 2rem; font-size: 1.1rem; border-bottom: 1px solid var(--border); padding-bottom: 1rem;}
     
     .live-indicator { font-size: 0.9rem; color: var(--accent); animation: blink 2s infinite; font-weight: normal; margin-left: 10px;}
     @keyframes blink { 50% { opacity: 0.5; } }
@@ -42,78 +42,92 @@
     }
     .map-block h2 { margin-top: 0; font-size: 1.4rem; border-bottom: 1px solid var(--border); padding-bottom: 0.5rem; margin-bottom: 1rem; color: #fff; }
 
-    .task-block {
+    /* Accordion Styles */
+    .accordion-section {
+      margin-bottom: 2.5rem;
+    }
+    .accordion-section h2 { margin-top: 0; font-size: 1.4rem; border-bottom: 1px solid var(--border); padding-bottom: 0.5rem; margin-bottom: 1rem; color: #fff; }
+    
+    .accordion-item {
       background: var(--surface);
-      padding: 1.5rem 2rem;
-      border-radius: 8px;
       border: 1px solid var(--border);
-      margin-bottom: 1.5rem;
-    }
-    .task-block h2 { margin-top: 0; font-size: 1.3rem; border-bottom: 1px solid var(--border); padding-bottom: 0.5rem; margin-bottom: 0.5rem; color: #fff; }
-    .task-desc { color: #aaa; margin-bottom: 1rem; font-size: 1.05rem; }
-
-    .input-group { display: flex; gap: 0.5rem; margin-bottom: 1.5rem; margin-top: 0.5rem; }
-    input {
-      flex: 1;
-      background: #2a2a2a;
-      border: 1px solid var(--border);
-      color: white;
-      padding: 0.8rem 1rem;
       border-radius: 6px;
-      font-size: 1rem;
+      margin-bottom: 0.8rem;
+      overflow: hidden;
     }
-    input:focus { outline: none; border-color: var(--accent); }
-    button {
-      background: var(--accent);
-      color: #000;
-      border: none;
-      padding: 0 1.5rem;
-      border-radius: 6px;
-      font-weight: bold;
-      font-size: 1rem;
+    .accordion-header {
+      padding: 1.2rem 1.5rem;
       cursor: pointer;
-    }
-    button:hover { opacity: 0.9; }
-
-    .idea-list { display: flex; flex-direction: column; gap: 0.6rem; }
-    .idea-item {
-      background: #2a2a2a;
-      padding: 0.8rem 1rem;
-      border-radius: 6px;
-      border-left: 4px solid var(--accent);
+      background: #252525;
+      font-weight: bold;
+      font-size: 1.1rem;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      animation: fadeIn 0.3s ease;
+      user-select: none;
     }
-    @keyframes fadeIn { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
-    .idea-text { word-break: break-word; font-size: 1.05rem; }
-    .delete-btn {
-      background: transparent;
-      color: #ff6b6b;
-      padding: 0.2rem 0.5rem;
-      font-size: 1.3rem;
-      border: none;
-      cursor: pointer;
+    .accordion-header:hover { background: #2a2a2a; }
+    .accordion-content {
+      padding: 0 1.5rem;
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.3s ease-out, padding 0.3s ease;
+      background: var(--surface);
+      color: #ccc;
     }
-    .delete-btn:hover { opacity: 0.7; }
+    .accordion-content.active {
+      padding: 1.2rem 1.5rem;
+      max-height: 500px;
+      border-top: 1px solid var(--border);
+    }
+
+    /* Shared Notepad Styles */
+    .notepad-block {
+      background: var(--surface);
+      padding: 1.5rem;
+      border-radius: 8px;
+      border: 1px solid var(--accent);
+      margin-bottom: 2rem;
+      display: flex;
+      flex-direction: column;
+    }
+    .notepad-block h2 { margin-top: 0; font-size: 1.4rem; border-bottom: 1px solid var(--border); padding-bottom: 0.5rem; margin-bottom: 1rem; color: #fff; display: flex; justify-content: space-between;}
+    .notepad-info { color: #aaa; font-size: 0.95rem; margin-bottom: 1rem; }
+    
+    #shared-notes {
+      width: 100%;
+      height: 400px;
+      background: #1a1a1a;
+      color: #e0e0e0;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 1rem;
+      font-family: monospace;
+      font-size: 1.05rem;
+      resize: vertical;
+      box-sizing: border-box;
+      line-height: 1.6;
+    }
+    #shared-notes:focus {
+      outline: none;
+      border-color: var(--accent);
+    }
   </style>
 </head>
 <body>
   <div class="container">
-    <h1>G2 Kickoff Meeting <span class="live-indicator">● Live Sync Active</span></h1>
-    <div class="subtitle">Public Transport System - Data & Intelligence. Discuss and drop ideas below.</div>
+    <h1>G2: Data & Intelligence Kickoff <span class="live-indicator">● Real-time Sync Active</span></h1>
+    <div class="subtitle">Public Transport System - Task Breakdown and Shared Workspace</div>
 
     <!-- MAP/CHART BLOCK -->
     <div class="map-block">
-      <h2>🗺️ G2 Scope, Blueprint & Innovations</h2>
-      <p style="color: #aaa; font-size: 0.95rem; margin-top: -10px; margin-bottom: 1.5rem;">Visual breakdown of our assigned scope, our development blueprint, and optional brainstorm ideas.</p>
+      <h2>Scope, Blueprint & Innovations Map</h2>
       
       <div class="mermaid" style="text-align: center;">
         graph TD
-          G2[🚌 G2: Data & Intelligence] --> Scope[📋 Assigned Responsibilities]
-          G2 --> Blue[🏗️ Development Blueprint]
-          G2 --> Ideas[💡 Innovation Ideas]
+          G2[G2: Data & Intelligence] --> Scope[Assigned Responsibilities]
+          G2 --> Blue[Development Blueprint]
+          G2 --> Ideas[Innovation Ideas]
 
           Scope --- S1[Data Ingestion & Storage]
           Scope --- S2[Stream & Batch Processing]
@@ -124,11 +138,11 @@
           Blue --> B1[Phase 1: Ingestion Pipelines]
           B1 --> B2[Phase 2: Data Processing & Quality]
           B2 --> B3[Phase 3: Model Training]
-          B3 --> B4[Phase 4: API Serving to Other Groups]
+          B3 --> B4[Phase 4: API Serving]
 
-          Ideas --- I1[Weather Integration?]
-          Ideas --- I2[Live Dashboards?]
-          Ideas --- I3[Anomaly Detection?]
+          Ideas --- I1[Weather Integration]
+          Ideas --- I2[Live Dashboards]
+          Ideas --- I3[Anomaly Detection]
 
           classDef main fill:#4ade80,stroke:#fff,stroke-width:2px,color:#000,font-weight:bold;
           classDef cat fill:#3b82f6,stroke:#fff,stroke-width:2px,color:#fff,font-weight:bold;
@@ -139,136 +153,134 @@
       </div>
     </div>
 
-    <!-- TASK 1 -->
-    <div class="task-block">
-      <h2>1. Introductions</h2>
-      <div class="task-desc">Quick round of names, course/year, and strongest technical skills.</div>
-      <div class="input-group">
-        <input type="text" id="input-1" placeholder="E.g., Kusal - Good at Python and APIs" onkeypress="if(event.key==='Enter') addIdea('1')">
-        <button onclick="addIdea('1')">Add</button>
+    <!-- TASKS EXPLANATION BLOCK -->
+    <div class="accordion-section">
+      <h2>Task Breakdown (Plain English)</h2>
+      <p style="color: #aaa; margin-top: -10px; margin-bottom: 1.5rem; font-size: 0.95rem;">Click on any task to see a simple explanation of what it means for our team.</p>
+
+      <div class="accordion-item">
+        <div class="accordion-header" onclick="toggleAccordion('desc-1')">
+          1. Data Ingestion & Storage <span>+</span>
+        </div>
+        <div class="accordion-content" id="desc-1">
+          <strong>What this means:</strong> We need to set up the systems that collect the raw data (like live GPS locations from buses or schedules) and save it securely in databases so we can use it later. Think of this as building the plumbing that brings water into the house.
+        </div>
       </div>
-      <div class="idea-list" id="list-1"></div>
+
+      <div class="accordion-item">
+        <div class="accordion-header" onclick="toggleAccordion('desc-2')">
+          2. Stream & Batch Processing <span>+</span>
+        </div>
+        <div class="accordion-content" id="desc-2">
+          <strong>What this means:</strong> Handling data in two ways. "Stream" processing means dealing with live data the exact second it arrives (to update live maps). "Batch" processing means analyzing large chunks of old data overnight (to find historical traffic patterns).
+        </div>
+      </div>
+
+      <div class="accordion-item">
+        <div class="accordion-header" onclick="toggleAccordion('desc-3')">
+          3. AI/ML ETA Models <span>+</span>
+        </div>
+        <div class="accordion-content" id="desc-3">
+          <strong>What this means:</strong> Using math and algorithms to guess exactly when a bus will arrive. We look at where the bus is now, historical traffic, and other factors to provide an accurate Estimated Time of Arrival (ETA).
+        </div>
+      </div>
+
+      <div class="accordion-item">
+        <div class="accordion-header" onclick="toggleAccordion('desc-4')">
+          4. Prediction API & Analytics <span>+</span>
+        </div>
+        <div class="accordion-content" id="desc-4">
+          <strong>What this means:</strong> Building a digital bridge (an API) so the other groups (like the frontend team building the website/app) can ask our system for the arrival times we calculated, and we send the answers back to them instantly.
+        </div>
+      </div>
+
+      <div class="accordion-item">
+        <div class="accordion-header" onclick="toggleAccordion('desc-5')">
+          5. Data Validation & Quality <span>+</span>
+        </div>
+        <div class="accordion-content" id="desc-5">
+          <strong>What this means:</strong> Setting up automatic checks to make sure the data we receive isn't broken or corrupt. If a GPS tracker sends us a location in the middle of the ocean, this system catches the error before it breaks our predictions.
+        </div>
+      </div>
+
+      <div class="accordion-item">
+        <div class="accordion-header" onclick="toggleAccordion('desc-6')">
+          6. Cross-Group Coordination <span>+</span>
+        </div>
+        <div class="accordion-content" id="desc-6">
+          <strong>What this means:</strong> Talking to the other teams. We need to clearly define what format the hardware/mobile team will send us GPS data in, and what format the frontend team expects us to return the ETA data in.
+        </div>
+      </div>
     </div>
 
-    <!-- TASK 2 -->
-    <div class="task-block">
-      <h2>2. Development Blueprint & Innovations</h2>
-      <div class="task-desc">Refer to the map above. What are your thoughts on our 4-Phase Blueprint? Any optional "Beyond" ideas we should try?</div>
-      <div class="input-group">
-        <input type="text" id="input-2" placeholder="Let's start with Phase 1..." onkeypress="if(event.key==='Enter') addIdea('2')">
-        <button onclick="addIdea('2')">Add</button>
+    <!-- SHARED NOTEPAD BLOCK -->
+    <div class="notepad-block">
+      <h2>
+        Shared Team Workspace
+        <span class="live-indicator" style="font-size: 0.8rem;">● Live & Auto-Saved</span>
+      </h2>
+      <div class="notepad-info">
+        This is a shared, real-time document. Everyone can type here together. Write down our plan, assigned roles, and questions for other groups. The text is continuously saved and synced.
       </div>
-      <div class="idea-list" id="list-2"></div>
-    </div>
-
-    <!-- TASK 3 -->
-    <div class="task-block">
-      <h2>3. Cross-Group Coordination 🤝</h2>
-      <div class="task-desc">How do we plan to talk with the other main groups today? What data do we need from them? What do we provide to them?</div>
-      <div class="input-group">
-        <input type="text" id="input-3" placeholder="We need to ask Group 1 for..." onkeypress="if(event.key==='Enter') addIdea('3')">
-        <button onclick="addIdea('3')">Add</button>
-      </div>
-      <div class="idea-list" id="list-3"></div>
-    </div>
-
-    <!-- TASK 4 -->
-    <div class="task-block">
-      <h2>4. Tech Stack Check</h2>
-      <div class="task-desc">PyTorch vs TensorFlow? Kafka for streams? PostgreSQL vs InfluxDB?</div>
-      <div class="input-group">
-        <input type="text" id="input-4" placeholder="I prefer PyTorch because..." onkeypress="if(event.key==='Enter') addIdea('4')">
-        <button onclick="addIdea('4')">Add</button>
-      </div>
-      <div class="idea-list" id="list-4"></div>
-    </div>
-
-    <!-- TASK 5 -->
-    <div class="task-block">
-      <h2>5. Roles Assignment</h2>
-      <div class="task-desc">Who wants to handle ML models? Data Pipelines? FastAPI? Validation?</div>
-      <div class="input-group">
-        <input type="text" id="input-5" placeholder="I can take the API side..." onkeypress="if(event.key==='Enter') addIdea('5')">
-        <button onclick="addIdea('5')">Add</button>
-      </div>
-      <div class="idea-list" id="list-5"></div>
-    </div>
-
-    <!-- TASK 6 -->
-    <div class="task-block">
-      <h2>6. Next Steps</h2>
-      <div class="task-desc">Setup GitHub, create comms group (WhatsApp/Discord), install tools.</div>
-      <div class="input-group">
-        <input type="text" id="input-6" placeholder="Let's use Discord for comms..." onkeypress="if(event.key==='Enter') addIdea('6')">
-        <button onclick="addIdea('6')">Add</button>
-      </div>
-      <div class="idea-list" id="list-6"></div>
+      <textarea id="shared-notes" placeholder="Start typing the meeting notes, roles, and action items here..."></textarea>
     </div>
 
   </div>
 
   <script>
-    // Initialize Mermaid for the flow chart
+    // Initialize Mermaid
     mermaid.initialize({ startOnLoad: true, theme: 'dark' });
 
-    // Initialize Gun.js for real-time sync
+    // Accordion Logic
+    function toggleAccordion(id) {
+      const content = document.getElementById(id);
+      const header = content.previousElementSibling;
+      const span = header.querySelector('span');
+      
+      if (content.classList.contains('active')) {
+        content.classList.remove('active');
+        span.textContent = '+';
+      } else {
+        content.classList.add('active');
+        span.textContent = '-';
+      }
+    }
+
+    // Initialize Gun.js for real-time text sync
     const gun = Gun(['https://gun-manhattan.herokuapp.com/gun', 'https://relay.peer.ooo/gun']);
-    // Update namespace so it resets for the new 6-task format
-    const app = gun.get('g2-kickoff-per-task-v3');
-    const tasks = ['1', '2', '3', '4', '5', '6'];
+    const doc = gun.get('g2-shared-workspace-document-v1');
+    const editor = document.getElementById('shared-notes');
 
-    function uuid() {
-      return Math.random().toString(36).substring(2) + Date.now().toString(36);
+    // Load local backup first so it's instant
+    const localBackup = localStorage.getItem('g2-notes-backup');
+    if (localBackup) {
+      editor.value = localBackup;
     }
 
-    function addIdea(taskId) {
-      const input = document.getElementById('input-' + taskId);
-      const text = input.value.trim();
-      if (!text) return;
-      
-      const id = uuid();
-      app.get('task-' + taskId).get(id).put({ text: text, time: Date.now(), active: true });
-      input.value = '';
-    }
+    // Sync outward when typing
+    editor.addEventListener('input', (e) => {
+      const val = e.target.value;
+      doc.put({ text: val });
+      localStorage.setItem('g2-notes-backup', val); // Save locally
+    });
 
-    function removeIdea(taskId, ideaId) {
-      app.get('task-' + taskId).get(ideaId).put({ active: false });
-    }
-
-    tasks.forEach(taskId => {
-      const container = document.getElementById('list-' + taskId);
-      
-      app.get('task-' + taskId).map().on((idea, id) => {
-        if (!idea) return;
+    // Sync inward when others type
+    doc.on((data) => {
+      if (data && data.text !== undefined && data.text !== editor.value) {
+        // Save cursor position to prevent jumping if actively typing
+        const start = editor.selectionStart;
+        const end = editor.selectionEnd;
         
-        let el = document.getElementById('idea-' + id);
+        editor.value = data.text;
         
-        if (!idea.active) {
-          if (el) el.remove();
-          return;
+        // Restore cursor position if focused
+        if (document.activeElement === editor) {
+          editor.setSelectionRange(start, end);
         }
-
-        if (!el && idea.text) {
-          el = document.createElement('div');
-          el.className = 'idea-item';
-          el.id = 'idea-' + id;
-          
-          const textSpan = document.createElement('span');
-          textSpan.className = 'idea-text';
-          textSpan.textContent = idea.text;
-          
-          const delBtn = document.createElement('button');
-          delBtn.className = 'delete-btn';
-          delBtn.innerHTML = '×';
-          delBtn.title = 'Delete for everyone';
-          delBtn.onclick = () => removeIdea(taskId, id);
-
-          el.appendChild(textSpan);
-          el.appendChild(delBtn);
-
-          container.prepend(el);
-        }
-      });
+        
+        // Update local backup
+        localStorage.setItem('g2-notes-backup', data.text);
+      }
     });
   </script>
 </body>
