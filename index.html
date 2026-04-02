@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>G2 Kickoff Meeting</title>
   <script src="https://cdn.jsdelivr.net/npm/gun/gun.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
   <style>
     :root {
       --bg: #121212;
@@ -22,266 +21,263 @@
       padding: 2rem;
       line-height: 1.5;
     }
-    .container {
-      max-width: 900px;
-      margin: 0 auto;
-    }
+    .container { max-width: 960px; margin: 0 auto; }
     h1 { color: var(--accent); margin-bottom: 0.5rem; font-size: 2rem; }
-    .subtitle { color: #888; margin-bottom: 2rem; font-size: 1.1rem; border-bottom: 1px solid var(--border); padding-bottom: 1rem;}
-    
-    .live-indicator { font-size: 0.9rem; color: var(--accent); animation: blink 2s infinite; font-weight: normal; margin-left: 10px;}
+    .subtitle { color: #888; margin-bottom: 2rem; font-size: 1.1rem; border-bottom: 1px solid var(--border); padding-bottom: 1rem; }
+    .live-indicator { font-size: 0.9rem; color: var(--accent); animation: blink 2s infinite; font-weight: normal; margin-left: 10px; }
     @keyframes blink { 50% { opacity: 0.5; } }
 
+    /* MAP */
     .map-block {
-      background: #1a1a1a;
+      background: #161616;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      margin-bottom: 2.5rem;
       padding: 1.5rem;
-      border-radius: 8px;
-      border: 1px solid var(--border);
-      margin-bottom: 2.5rem;
-      overflow-x: auto;
     }
-    .map-block h2 { margin-top: 0; font-size: 1.4rem; border-bottom: 1px solid var(--border); padding-bottom: 0.5rem; margin-bottom: 1rem; color: #fff; }
+    .map-block h2 { margin-top: 0; font-size: 1.4rem; border-bottom: 1px solid var(--border); padding-bottom: 0.5rem; margin-bottom: 1.2rem; color: #fff; }
+    .map-block svg { display: block; width: 100%; height: auto; }
+    .map-node { transition: opacity 0.2s; cursor: default; }
+    .map-node:hover rect, .map-node:hover circle { opacity: 0.85; }
 
-    /* Accordion Styles */
-    .accordion-section {
-      margin-bottom: 2.5rem;
-    }
-    .accordion-section h2 { margin-top: 0; font-size: 1.4rem; border-bottom: 1px solid var(--border); padding-bottom: 0.5rem; margin-bottom: 1rem; color: #fff; }
-    
-    .accordion-item {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 6px;
-      margin-bottom: 0.8rem;
-      overflow: hidden;
-    }
-    .accordion-header {
-      padding: 1.2rem 1.5rem;
-      cursor: pointer;
-      background: #252525;
-      font-weight: bold;
-      font-size: 1.1rem;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      user-select: none;
-    }
+    /* Accordion */
+    .accordion-section { margin-bottom: 2.5rem; }
+    .accordion-section h2 { font-size: 1.4rem; border-bottom: 1px solid var(--border); padding-bottom: 0.5rem; margin-bottom: 1rem; color: #fff; }
+    .accordion-item { background: var(--surface); border: 1px solid var(--border); border-radius: 6px; margin-bottom: 0.8rem; overflow: hidden; }
+    .accordion-header { padding: 1.2rem 1.5rem; cursor: pointer; background: #252525; font-weight: bold; font-size: 1.1rem; display: flex; justify-content: space-between; align-items: center; user-select: none; }
     .accordion-header:hover { background: #2a2a2a; }
-    .accordion-content {
-      padding: 0 1.5rem;
-      max-height: 0;
-      overflow: hidden;
-      transition: max-height 0.3s ease-out, padding 0.3s ease;
-      background: var(--surface);
-      color: #ccc;
-    }
-    .accordion-content.active {
-      padding: 1.2rem 1.5rem;
-      max-height: 500px;
-      border-top: 1px solid var(--border);
-    }
+    .accordion-content { padding: 0 1.5rem; max-height: 0; overflow: hidden; transition: max-height 0.3s ease-out, padding 0.3s ease; background: var(--surface); color: #ccc; }
+    .accordion-content.active { padding: 1.2rem 1.5rem; max-height: 500px; border-top: 1px solid var(--border); }
 
-    /* Shared Notepad Styles */
-    .notepad-block {
-      background: var(--surface);
-      padding: 1.5rem;
-      border-radius: 8px;
-      border: 1px solid var(--accent);
-      margin-bottom: 2rem;
-      display: flex;
-      flex-direction: column;
-    }
-    .notepad-block h2 { margin-top: 0; font-size: 1.4rem; border-bottom: 1px solid var(--border); padding-bottom: 0.5rem; margin-bottom: 1rem; color: #fff; display: flex; justify-content: space-between;}
+    /* Notepad */
+    .notepad-block { background: var(--surface); padding: 1.5rem; border-radius: 8px; border: 1px solid var(--accent); margin-bottom: 2rem; }
+    .notepad-block h2 { margin-top: 0; font-size: 1.4rem; border-bottom: 1px solid var(--border); padding-bottom: 0.5rem; margin-bottom: 1rem; color: #fff; display: flex; justify-content: space-between; align-items: center; }
     .notepad-info { color: #aaa; font-size: 0.95rem; margin-bottom: 1rem; }
-    
-    #shared-notes {
-      width: 100%;
-      height: 400px;
-      background: #1a1a1a;
-      color: #e0e0e0;
-      border: 1px solid var(--border);
-      border-radius: 6px;
-      padding: 1rem;
-      font-family: monospace;
-      font-size: 1.05rem;
-      resize: vertical;
-      box-sizing: border-box;
-      line-height: 1.6;
-    }
-    #shared-notes:focus {
-      outline: none;
-      border-color: var(--accent);
-    }
+    #shared-notes { width: 100%; height: 400px; background: #1a1a1a; color: #e0e0e0; border: 1px solid var(--border); border-radius: 6px; padding: 1rem; font-family: monospace; font-size: 1.05rem; resize: vertical; box-sizing: border-box; line-height: 1.6; }
+    #shared-notes:focus { outline: none; border-color: var(--accent); }
   </style>
 </head>
 <body>
-  <div class="container">
-    <h1>G2: Data & Intelligence Kickoff <span class="live-indicator">● Real-time Sync Active</span></h1>
-    <div class="subtitle">Public Transport System - Task Breakdown and Shared Workspace</div>
+<div class="container">
+  <h1>G2: Data & Intelligence Kickoff <span class="live-indicator">&#9679; Real-time Sync Active</span></h1>
+  <div class="subtitle">Public Transport System — Task Breakdown and Shared Workspace</div>
 
-    <!-- MAP/CHART BLOCK -->
-    <div class="map-block">
-      <h2>Scope, Blueprint & Innovations Map</h2>
-      
-      <div class="mermaid" style="text-align: center;">
-        graph TD
-          G2[G2: Data & Intelligence] --> Scope[Assigned Responsibilities]
-          G2 --> Blue[Development Blueprint]
-          G2 --> Ideas[Innovation Ideas]
+  <!-- MIND MAP -->
+  <div class="map-block">
+    <h2>Scope, Blueprint &amp; Innovations Map</h2>
+    <svg viewBox="0 0 1100 590" xmlns="http://www.w3.org/2000/svg" aria-label="G2 Mind Map">
+      <defs>
+        <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+          <feDropShadow dx="0" dy="3" stdDeviation="4" flood-color="rgba(0,0,0,0.5)"/>
+        </filter>
+        <marker id="arr" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto">
+          <path d="M0,0 L0,6 L8,3 z" fill="#7c3aed"/>
+        </marker>
+      </defs>
 
-          Scope --- S1[Data Ingestion & Storage]
-          Scope --- S2[Stream & Batch Processing]
-          Scope --- S3[AI/ML ETA Models]
-          Scope --- S4[Prediction API & Analytics]
-          Scope --- S5[Data Validation]
+      <!-- ── CONNECTOR LINES (drawn first, behind nodes) ── -->
 
-          Blue --> B1[Phase 1: Ingestion Pipelines]
-          B1 --> B2[Phase 2: Data Processing & Quality]
-          B2 --> B3[Phase 3: Model Training]
-          B3 --> B4[Phase 4: API Serving]
+      <!-- Root → Responsibilities hub -->
+      <path d="M 550 76 C 550 130 155 130 155 178" stroke="#3b82f6" stroke-width="2.5" fill="none" opacity="0.65"/>
+      <!-- Root → Blueprint P1 -->
+      <path d="M 550 76 L 550 170" stroke="#7c3aed" stroke-width="2.5" fill="none" opacity="0.65"/>
+      <!-- Root → Innovation hub -->
+      <path d="M 550 76 C 550 130 945 130 945 178" stroke="#d97706" stroke-width="2.5" fill="none" opacity="0.65"/>
 
-          Ideas --- I1[Weather Integration]
-          Ideas --- I2[Live Dashboards]
-          Ideas --- I3[Anomaly Detection]
+      <!-- Responsibilities hub → leaves -->
+      <path d="M 155 222 C 155 250 105 250 105 264" stroke="#3b82f6" stroke-width="1.8" fill="none" opacity="0.55"/>
+      <path d="M 155 222 C 155 288 105 288 105 324" stroke="#3b82f6" stroke-width="1.8" fill="none" opacity="0.55"/>
+      <path d="M 155 222 C 155 334 105 334 105 384" stroke="#3b82f6" stroke-width="1.8" fill="none" opacity="0.55"/>
+      <path d="M 155 222 C 155 384 105 384 105 444" stroke="#3b82f6" stroke-width="1.8" fill="none" opacity="0.55"/>
+      <path d="M 155 222 C 155 434 105 434 105 504" stroke="#3b82f6" stroke-width="1.8" fill="none" opacity="0.55"/>
 
-          classDef main fill:#4ade80,stroke:#fff,stroke-width:2px,color:#000,font-weight:bold;
-          classDef cat fill:#3b82f6,stroke:#fff,stroke-width:2px,color:#fff,font-weight:bold;
-          classDef node fill:#1e3a8a,stroke:#3b82f6,stroke-width:1px,color:#fff;
-          class G2 main;
-          class Scope,Blue,Ideas cat;
-          class S1,S2,S3,S4,S5,B1,B2,B3,B4,I1,I2,I3 node;
-      </div>
-    </div>
+      <!-- Blueprint chain arrows -->
+      <path d="M 550 210 L 550 260" stroke="#7c3aed" stroke-width="1.8" fill="none" opacity="0.65" marker-end="url(#arr)"/>
+      <path d="M 550 300 L 550 350" stroke="#7c3aed" stroke-width="1.8" fill="none" opacity="0.65" marker-end="url(#arr)"/>
+      <path d="M 550 390 L 550 440" stroke="#7c3aed" stroke-width="1.8" fill="none" opacity="0.65" marker-end="url(#arr)"/>
 
-    <!-- TASKS EXPLANATION BLOCK -->
-    <div class="accordion-section">
-      <h2>Task Breakdown (Plain English)</h2>
-      <p style="color: #aaa; margin-top: -10px; margin-bottom: 1.5rem; font-size: 0.95rem;">Click on any task to see a simple explanation of what it means for our team.</p>
+      <!-- Innovation hub → leaves -->
+      <path d="M 945 222 C 945 250 997 250 997 264" stroke="#d97706" stroke-width="1.8" fill="none" opacity="0.55"/>
+      <path d="M 945 222 C 945 316 997 316 997 354" stroke="#d97706" stroke-width="1.8" fill="none" opacity="0.55"/>
+      <path d="M 945 222 C 945 394 997 394 997 444" stroke="#d97706" stroke-width="1.8" fill="none" opacity="0.55"/>
 
-      <div class="accordion-item">
-        <div class="accordion-header" onclick="toggleAccordion('desc-1')">
-          1. Data Ingestion & Storage <span>+</span>
-        </div>
-        <div class="accordion-content" id="desc-1">
-          <strong>What this means:</strong> We need to set up the systems that collect the raw data (like live GPS locations from buses or schedules) and save it securely in databases so we can use it later. Think of this as building the plumbing that brings water into the house.
-        </div>
-      </div>
+      <!-- ── ROOT NODE ── -->
+      <g class="map-node">
+        <rect x="430" y="24" width="240" height="52" rx="26" fill="#4ade80" filter="url(#glow)"/>
+        <text x="550" y="56" text-anchor="middle" font-size="15" font-weight="bold" fill="#000" font-family="system-ui, sans-serif">G2: Data &amp; Intelligence</text>
+      </g>
 
-      <div class="accordion-item">
-        <div class="accordion-header" onclick="toggleAccordion('desc-2')">
-          2. Stream & Batch Processing <span>+</span>
-        </div>
-        <div class="accordion-content" id="desc-2">
-          <strong>What this means:</strong> Handling data in two ways. "Stream" processing means dealing with live data the exact second it arrives (to update live maps). "Batch" processing means analyzing large chunks of old data overnight (to find historical traffic patterns).
-        </div>
-      </div>
+      <!-- ── RESPONSIBILITIES HUB ── -->
+      <g class="map-node">
+        <rect x="55" y="178" width="200" height="44" rx="22" fill="#3b82f6" filter="url(#glow)"/>
+        <text x="155" y="205" text-anchor="middle" font-size="13" font-weight="bold" fill="#fff" font-family="system-ui, sans-serif">Assigned Responsibilities</text>
+      </g>
 
-      <div class="accordion-item">
-        <div class="accordion-header" onclick="toggleAccordion('desc-3')">
-          3. AI/ML ETA Models <span>+</span>
-        </div>
-        <div class="accordion-content" id="desc-3">
-          <strong>What this means:</strong> Using math and algorithms to guess exactly when a bus will arrive. We look at where the bus is now, historical traffic, and other factors to provide an accurate Estimated Time of Arrival (ETA).
-        </div>
-      </div>
+      <!-- Responsibility Leaves -->
+      <g class="map-node">
+        <rect x="15" y="264" width="180" height="36" rx="10" fill="#1e40af" filter="url(#glow)"/>
+        <text x="105" y="287" text-anchor="middle" font-size="12" fill="#bfdbfe" font-family="system-ui, sans-serif">Data Ingestion &amp; Storage</text>
+      </g>
+      <g class="map-node">
+        <rect x="15" y="324" width="180" height="36" rx="10" fill="#1e40af" filter="url(#glow)"/>
+        <text x="105" y="347" text-anchor="middle" font-size="12" fill="#bfdbfe" font-family="system-ui, sans-serif">Stream &amp; Batch Processing</text>
+      </g>
+      <g class="map-node">
+        <rect x="15" y="384" width="180" height="36" rx="10" fill="#1e40af" filter="url(#glow)"/>
+        <text x="105" y="407" text-anchor="middle" font-size="12" fill="#bfdbfe" font-family="system-ui, sans-serif">AI/ML ETA Models</text>
+      </g>
+      <g class="map-node">
+        <rect x="15" y="444" width="180" height="36" rx="10" fill="#1e40af" filter="url(#glow)"/>
+        <text x="105" y="467" text-anchor="middle" font-size="12" fill="#bfdbfe" font-family="system-ui, sans-serif">Prediction API &amp; Analytics</text>
+      </g>
+      <g class="map-node">
+        <rect x="15" y="504" width="180" height="36" rx="10" fill="#1e40af" filter="url(#glow)"/>
+        <text x="105" y="527" text-anchor="middle" font-size="12" fill="#bfdbfe" font-family="system-ui, sans-serif">Data Validation</text>
+      </g>
 
-      <div class="accordion-item">
-        <div class="accordion-header" onclick="toggleAccordion('desc-4')">
-          4. Prediction API & Analytics <span>+</span>
-        </div>
-        <div class="accordion-content" id="desc-4">
-          <strong>What this means:</strong> Building a digital bridge (an API) so the other groups (like the frontend team building the website/app) can ask our system for the arrival times we calculated, and we send the answers back to them instantly.
-        </div>
-      </div>
+      <!-- ── DEVELOPMENT BLUEPRINT CHAIN ── -->
+      <g class="map-node">
+        <rect x="445" y="170" width="210" height="40" rx="20" fill="#7c3aed" filter="url(#glow)"/>
+        <text x="550" y="195" text-anchor="middle" font-size="13" font-weight="bold" fill="#ede9fe" font-family="system-ui, sans-serif">Phase 1: Ingestion Pipelines</text>
+      </g>
+      <g class="map-node">
+        <rect x="445" y="260" width="210" height="40" rx="20" fill="#6d28d9" filter="url(#glow)"/>
+        <text x="550" y="278" text-anchor="middle" font-size="12" font-weight="bold" fill="#ede9fe" font-family="system-ui, sans-serif">Phase 2: Processing</text>
+        <text x="550" y="294" text-anchor="middle" font-size="12" font-weight="bold" fill="#ede9fe" font-family="system-ui, sans-serif">&amp; Quality Checks</text>
+      </g>
+      <g class="map-node">
+        <rect x="445" y="350" width="210" height="40" rx="20" fill="#5b21b6" filter="url(#glow)"/>
+        <text x="550" y="375" text-anchor="middle" font-size="13" font-weight="bold" fill="#ede9fe" font-family="system-ui, sans-serif">Phase 3: Model Training</text>
+      </g>
+      <g class="map-node">
+        <rect x="445" y="440" width="210" height="40" rx="20" fill="#4c1d95" filter="url(#glow)"/>
+        <text x="550" y="465" text-anchor="middle" font-size="13" font-weight="bold" fill="#ede9fe" font-family="system-ui, sans-serif">Phase 4: API Serving</text>
+      </g>
 
-      <div class="accordion-item">
-        <div class="accordion-header" onclick="toggleAccordion('desc-5')">
-          5. Data Validation & Quality <span>+</span>
-        </div>
-        <div class="accordion-content" id="desc-5">
-          <strong>What this means:</strong> Setting up automatic checks to make sure the data we receive isn't broken or corrupt. If a GPS tracker sends us a location in the middle of the ocean, this system catches the error before it breaks our predictions.
-        </div>
-      </div>
+      <!-- ── INNOVATION HUB ── -->
+      <g class="map-node">
+        <rect x="855" y="178" width="180" height="44" rx="22" fill="#d97706" filter="url(#glow)"/>
+        <text x="945" y="205" text-anchor="middle" font-size="13" font-weight="bold" fill="#000" font-family="system-ui, sans-serif">Innovation Ideas</text>
+      </g>
 
-      <div class="accordion-item">
-        <div class="accordion-header" onclick="toggleAccordion('desc-6')">
-          6. Cross-Group Coordination <span>+</span>
-        </div>
-        <div class="accordion-content" id="desc-6">
-          <strong>What this means:</strong> Talking to the other teams. We need to clearly define what format the hardware/mobile team will send us GPS data in, and what format the frontend team expects us to return the ETA data in.
-        </div>
-      </div>
-    </div>
+      <!-- Innovation Leaves -->
+      <g class="map-node">
+        <rect x="912" y="264" width="170" height="36" rx="10" fill="#92400e" filter="url(#glow)"/>
+        <text x="997" y="287" text-anchor="middle" font-size="12" fill="#fde68a" font-family="system-ui, sans-serif">Weather Integration</text>
+      </g>
+      <g class="map-node">
+        <rect x="912" y="354" width="170" height="36" rx="10" fill="#92400e" filter="url(#glow)"/>
+        <text x="997" y="377" text-anchor="middle" font-size="12" fill="#fde68a" font-family="system-ui, sans-serif">Live Dashboards</text>
+      </g>
+      <g class="map-node">
+        <rect x="912" y="444" width="170" height="36" rx="10" fill="#92400e" filter="url(#glow)"/>
+        <text x="997" y="467" text-anchor="middle" font-size="12" fill="#fde68a" font-family="system-ui, sans-serif">Anomaly Detection</text>
+      </g>
 
-    <!-- SHARED NOTEPAD BLOCK -->
-    <div class="notepad-block">
-      <h2>
-        Shared Team Workspace
-        <span class="live-indicator" style="font-size: 0.8rem;">● Live & Auto-Saved</span>
-      </h2>
-      <div class="notepad-info">
-        This is a shared, real-time document. Everyone can type here together. Write down our plan, assigned roles, and questions for other groups. The text is continuously saved and synced.
-      </div>
-      <textarea id="shared-notes" placeholder="Start typing the meeting notes, roles, and action items here..."></textarea>
-    </div>
-
+      <!-- Branch Labels -->
+      <text x="155" y="162" text-anchor="middle" font-size="10" fill="#93c5fd" font-family="system-ui, sans-serif" letter-spacing="0.05em">SCOPE</text>
+      <text x="550" y="158" text-anchor="middle" font-size="10" fill="#c4b5fd" font-family="system-ui, sans-serif" letter-spacing="0.05em">BLUEPRINT</text>
+      <text x="945" y="162" text-anchor="middle" font-size="10" fill="#fcd34d" font-family="system-ui, sans-serif" letter-spacing="0.05em">OPTIONAL IDEAS</text>
+    </svg>
   </div>
 
-  <script>
-    // Initialize Mermaid
-    mermaid.initialize({ startOnLoad: true, theme: 'dark' });
+  <!-- TASK BREAKDOWN ACCORDION -->
+  <div class="accordion-section">
+    <h2>Task Breakdown (Plain English)</h2>
+    <p style="color:#aaa; margin-top:-10px; margin-bottom:1.5rem; font-size:0.95rem;">Click on any task to see a simple explanation of what it means for our team.</p>
 
-    // Accordion Logic
-    function toggleAccordion(id) {
-      const content = document.getElementById(id);
-      const header = content.previousElementSibling;
-      const span = header.querySelector('span');
-      
-      if (content.classList.contains('active')) {
-        content.classList.remove('active');
-        span.textContent = '+';
-      } else {
-        content.classList.add('active');
-        span.textContent = '-';
-      }
+    <div class="accordion-item">
+      <div class="accordion-header" onclick="toggleAccordion('desc-1')">1. Data Ingestion &amp; Storage <span>+</span></div>
+      <div class="accordion-content" id="desc-1">
+        <strong>What this means:</strong> We set up systems that collect raw data — like live GPS locations from buses and timetable schedules — and store them securely in databases. Think of it as building the plumbing that brings water into the house. Nothing else can work until this is in place.
+      </div>
+    </div>
+
+    <div class="accordion-item">
+      <div class="accordion-header" onclick="toggleAccordion('desc-2')">2. Stream &amp; Batch Processing <span>+</span></div>
+      <div class="accordion-content" id="desc-2">
+        <strong>What this means:</strong> Handling data in two ways. "Stream" processing deals with live data the moment it arrives — updating a map in real time. "Batch" processing analyzes large amounts of old data at once, like running a nightly report to find recurring traffic patterns.
+      </div>
+    </div>
+
+    <div class="accordion-item">
+      <div class="accordion-header" onclick="toggleAccordion('desc-3')">3. AI/ML ETA Models <span>+</span></div>
+      <div class="accordion-content" id="desc-3">
+        <strong>What this means:</strong> Using algorithms to predict exactly when a bus will arrive at a stop. The model learns from historical patterns — traffic, time of day, weather — to give commuters a reliable Estimated Time of Arrival (ETA). This is our most important deliverable.
+      </div>
+    </div>
+
+    <div class="accordion-item">
+      <div class="accordion-header" onclick="toggleAccordion('desc-4')">4. Prediction API &amp; Analytics <span>+</span></div>
+      <div class="accordion-content" id="desc-4">
+        <strong>What this means:</strong> Building a digital interface (an API) that other groups — like the team building the mobile app — can call to get ETA predictions from us. When they ask "when is Bus 47 arriving?", our system answers in under a second.
+      </div>
+    </div>
+
+    <div class="accordion-item">
+      <div class="accordion-header" onclick="toggleAccordion('desc-5')">5. Data Validation &amp; Quality <span>+</span></div>
+      <div class="accordion-content" id="desc-5">
+        <strong>What this means:</strong> Automatic checks that catch corrupt or impossible data before it breaks our models. If a GPS tracker reports a bus in the ocean, or a timestamp jumps backwards in time, these checks flag it so we never train our AI on bad data.
+      </div>
+    </div>
+
+    <div class="accordion-item">
+      <div class="accordion-header" onclick="toggleAccordion('desc-6')">6. Cross-Group Coordination <span>+</span></div>
+      <div class="accordion-content" id="desc-6">
+        <strong>What this means:</strong> Talking with other sub-groups to agree on contracts. We need to know: what format will the hardware/GPS team send us data in, and what format does the frontend team expect us to return predictions in? This prevents integration failures later.
+      </div>
+    </div>
+  </div>
+
+  <!-- SHARED NOTEPAD -->
+  <div class="notepad-block">
+    <h2>
+      Shared Team Workspace
+      <span class="live-indicator" style="font-size:0.8rem;">&#9679; Live &amp; Auto-Saved</span>
+    </h2>
+    <div class="notepad-info">
+      This is a shared, real-time document. Everyone can type here together. Write down our plan, assigned roles, and questions for other groups. The text is continuously saved and synced.
+    </div>
+    <textarea id="shared-notes" placeholder="Start typing the meeting notes, roles, and action items here..."></textarea>
+  </div>
+
+</div>
+
+<script>
+  function toggleAccordion(id) {
+    const content = document.getElementById(id);
+    const span = content.previousElementSibling.querySelector('span');
+    if (content.classList.contains('active')) {
+      content.classList.remove('active');
+      span.textContent = '+';
+    } else {
+      content.classList.add('active');
+      span.textContent = '-';
     }
+  }
 
-    // Initialize Gun.js for real-time text sync
-    const gun = Gun(['https://gun-manhattan.herokuapp.com/gun', 'https://relay.peer.ooo/gun']);
-    const doc = gun.get('g2-shared-workspace-document-v1');
-    const editor = document.getElementById('shared-notes');
+  // Gun.js real-time shared notepad
+  const gun = Gun(['https://gun-manhattan.herokuapp.com/gun', 'https://relay.peer.ooo/gun']);
+  const doc = gun.get('g2-shared-workspace-document-v1');
+  const editor = document.getElementById('shared-notes');
 
-    // Load local backup first so it's instant
-    const localBackup = localStorage.getItem('g2-notes-backup');
-    if (localBackup) {
-      editor.value = localBackup;
+  const localBackup = localStorage.getItem('g2-notes-backup');
+  if (localBackup) editor.value = localBackup;
+
+  editor.addEventListener('input', () => {
+    doc.put({ text: editor.value });
+    localStorage.setItem('g2-notes-backup', editor.value);
+  });
+
+  doc.on((data) => {
+    if (data && data.text !== undefined && data.text !== editor.value) {
+      const start = editor.selectionStart;
+      const end = editor.selectionEnd;
+      editor.value = data.text;
+      if (document.activeElement === editor) editor.setSelectionRange(start, end);
+      localStorage.setItem('g2-notes-backup', data.text);
     }
-
-    // Sync outward when typing
-    editor.addEventListener('input', (e) => {
-      const val = e.target.value;
-      doc.put({ text: val });
-      localStorage.setItem('g2-notes-backup', val); // Save locally
-    });
-
-    // Sync inward when others type
-    doc.on((data) => {
-      if (data && data.text !== undefined && data.text !== editor.value) {
-        // Save cursor position to prevent jumping if actively typing
-        const start = editor.selectionStart;
-        const end = editor.selectionEnd;
-        
-        editor.value = data.text;
-        
-        // Restore cursor position if focused
-        if (document.activeElement === editor) {
-          editor.setSelectionRange(start, end);
-        }
-        
-        // Update local backup
-        localStorage.setItem('g2-notes-backup', data.text);
-      }
-    });
-  </script>
+  });
+</script>
 </body>
 </html>
