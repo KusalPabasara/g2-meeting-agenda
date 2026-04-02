@@ -98,6 +98,23 @@
     .mom-del { background: none; border: none; color: #555; cursor: pointer; font-size: 1rem; padding: 0; line-height: 1; flex-shrink: 0; }
     .mom-del:hover { color: #e55; }
     @keyframes fadeIn { from { opacity:0; transform:translateY(-4px); } to { opacity:1; transform:translateY(0); } }
+
+    /* Resources */
+    .resources-block { margin-bottom: 2.5rem; }
+    .resources-block > h2 { font-size: 1.4rem; border-bottom: 1px solid var(--border); padding-bottom: 0.5rem; margin-bottom: 0.4rem; color: #fff; }
+    .resources-block > p { color: #aaa; font-size: 0.93rem; margin-bottom: 1.2rem; }
+    .res-category { margin-bottom: 1.5rem; }
+    .res-category h3 { font-size: 1rem; color: #aaa; text-transform: uppercase; letter-spacing: 0.06em; margin: 0 0 0.7rem; font-weight: 600; }
+    .res-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 0.7rem; }
+    .res-card { background: #1e1e1e; border: 1px solid var(--border); border-radius: 8px; padding: 0.9rem 1rem; text-decoration: none; display: block; transition: border-color 0.2s, background 0.2s; }
+    .res-card:hover { border-color: var(--accent); background: #252525; }
+    .res-card .rc-type { font-size: 0.72rem; font-weight: bold; text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 0.35rem; }
+    .rc-paper { color: #60a5fa; }
+    .rc-docs  { color: #a78bfa; }
+    .rc-guide { color: #fb923c; }
+    .rc-tool  { color: #4ade80; }
+    .res-card .rc-title { font-size: 0.97rem; font-weight: bold; color: #e0e0e0; margin-bottom: 0.25rem; line-height: 1.35; }
+    .res-card .rc-desc  { font-size: 0.83rem; color: #888; line-height: 1.4; }
   </style>
 </head>
 <body>
@@ -441,6 +458,158 @@
       <button class="idea-send-btn" onclick="sendIdea()">Send</button>
     </div>
     <ul class="ideas-list" id="ideas-list"></ul>
+  </div>
+
+  <!-- RESOURCES -->
+  <div class="resources-block">
+    <h2>Resources — Papers, Guides &amp; Tools</h2>
+    <p>Curated links directly relevant to our 5 task areas. Click any card to open. Share with the team when ready.</p>
+
+    <div class="res-category">
+      <h3>Research Papers — Bus ETA &amp; Prediction</h3>
+      <div class="res-cards">
+        <a class="res-card" href="https://arxiv.org/abs/2303.15495" target="_blank">
+          <div class="rc-type rc-paper">Research Paper &middot; arXiv 2023</div>
+          <div class="rc-title">Real-Time Bus Arrival Prediction: A Deep Learning Approach</div>
+          <div class="rc-desc">Uses LSTM + diverse data sources for real-time ETA. Directly matches our Phase 3 task. Free to read on arXiv.</div>
+        </a>
+        <a class="res-card" href="https://www.researchgate.net/publication/397281321_Bus_Arrival_Time_Prediction_Using_Machine_Learning_Approaches" target="_blank">
+          <div class="rc-type rc-paper">Research Paper &middot; ResearchGate</div>
+          <div class="rc-title">Bus Arrival Time Prediction Using ML Approaches</div>
+          <div class="rc-desc">Compares parametric vs. non-parametric models for bus arrival. Great starting point for choosing our model type.</div>
+        </a>
+        <a class="res-card" href="https://www.mdpi.com/2079-9292/11/12/1875" target="_blank">
+          <div class="rc-type rc-paper">Research Paper &middot; MDPI 2022</div>
+          <div class="rc-title">Novel Bus Arrival Prediction Based on Spatio-Temporal Dynamics</div>
+          <div class="rc-desc">Introduces Bus Flow Centrality Analysis (BFC) for extracting spatial patterns. Useful for advanced feature engineering.</div>
+        </a>
+        <a class="res-card" href="https://wires.onlinelibrary.wiley.com/doi/10.1002/widm.1457" target="_blank">
+          <div class="rc-type rc-paper">Review Paper &middot; Wiley WIREs</div>
+          <div class="rc-title">Review: Bus Arrival Time Prediction Using AI</div>
+          <div class="rc-desc">Comprehensive review of all major AI/ML approaches for bus prediction. Read this first to understand the landscape before choosing a method.</div>
+        </a>
+        <a class="res-card" href="https://www.sciencedirect.com/science/article/abs/pii/S0263224122006364" target="_blank">
+          <div class="rc-type rc-paper">Research Paper &middot; ScienceDirect 2022</div>
+          <div class="rc-title">Predicting Bus Travel Time Using ML with Weather &amp; Traffic</div>
+          <div class="rc-desc">Includes weather and traffic as features — directly relevant to our innovation ideas around weather integration.</div>
+        </a>
+      </div>
+    </div>
+
+    <div class="res-category">
+      <h3>Data Ingestion &amp; Streaming — Task 1 &amp; 2</h3>
+      <div class="res-cards">
+        <a class="res-card" href="https://docs.confluent.io/kafka/introduction.html" target="_blank">
+          <div class="rc-type rc-docs">Official Docs &middot; Confluent</div>
+          <div class="rc-title">Introduction to Apache Kafka</div>
+          <div class="rc-desc">The definitive guide to Kafka — what it is, how it works, and when to use it. Start here before writing any pipeline code.</div>
+        </a>
+        <a class="res-card" href="https://spark.apache.org/docs/latest/structured-streaming-programming-guide.html" target="_blank">
+          <div class="rc-type rc-docs">Official Docs &middot; Apache Spark</div>
+          <div class="rc-title">Structured Streaming Programming Guide</div>
+          <div class="rc-desc">Official Spark guide for both stream and batch processing. The go-to reference for our Task 2 pipeline work.</div>
+        </a>
+        <a class="res-card" href="https://hevodata.com/learn/kafka-for-data-ingestion/" target="_blank">
+          <div class="rc-type rc-guide">Guide &middot; Hevo</div>
+          <div class="rc-title">Kafka for Data Ingestion — Simplified 101</div>
+          <div class="rc-desc">Plain-English explainer of how Kafka handles data ingestion. Good for team members new to streaming systems.</div>
+        </a>
+      </div>
+    </div>
+
+    <div class="res-category">
+      <h3>ML Model Training &amp; Tracking — Task 3</h3>
+      <div class="res-cards">
+        <a class="res-card" href="https://scikit-learn.org/stable/tutorial/basic/tutorial.html" target="_blank">
+          <div class="rc-type rc-docs">Official Docs &middot; scikit-learn</div>
+          <div class="rc-title">Introduction to Machine Learning with scikit-learn</div>
+          <div class="rc-desc">Start here if new to ML. Covers training, testing, and evaluating models in Python. The fastest way to get a working baseline model.</div>
+        </a>
+        <a class="res-card" href="https://mlflow.org/docs/latest/ml/tracking/" target="_blank">
+          <div class="rc-type rc-docs">Official Docs &middot; MLflow</div>
+          <div class="rc-title">MLflow Experiment Tracking</div>
+          <div class="rc-desc">Track every training run, log metrics, compare models. Essential for proving our model improves over time — makes our work look professional.</div>
+        </a>
+        <a class="res-card" href="https://www.kdnuggets.com/mlflow-mastery-a-complete-guide-to-experiment-tracking-and-model-management" target="_blank">
+          <div class="rc-type rc-guide">Guide &middot; KDnuggets</div>
+          <div class="rc-title">MLflow Mastery — Complete Guide</div>
+          <div class="rc-desc">Practical walkthrough of MLflow for experiment tracking, versioning, and model registry. Real examples with code.</div>
+        </a>
+      </div>
+    </div>
+
+    <div class="res-category">
+      <h3>API Serving &amp; Deployment — Task 4</h3>
+      <div class="res-cards">
+        <a class="res-card" href="https://machinelearningmastery.com/step-by-step-guide-to-deploying-machine-learning-models-with-fastapi-and-docker/" target="_blank">
+          <div class="rc-type rc-guide">Guide &middot; ML Mastery</div>
+          <div class="rc-title">Deploy ML Models with FastAPI + Docker — Step by Step</div>
+          <div class="rc-desc">Takes a trained model all the way to a containerised, production-ready API. Exactly what we need for Phase 4.</div>
+        </a>
+        <a class="res-card" href="https://www.analyticsvidhya.com/blog/2025/12/fastapi-machine-learning-deployment/" target="_blank">
+          <div class="rc-type rc-guide">Guide &middot; Analytics Vidhya</div>
+          <div class="rc-title">Building &amp; Deploying an ML Model Using FastAPI</div>
+          <div class="rc-desc">End-to-end walkthrough with code. Good companion to the ML Mastery guide above — read both before starting Task 4.</div>
+        </a>
+        <a class="res-card" href="https://www.geeksforgeeks.org/machine-learning/deploying-ml-models-as-api-using-fastapi/" target="_blank">
+          <div class="rc-type rc-guide">Guide &middot; GeeksforGeeks</div>
+          <div class="rc-title">Deploying ML Models as API Using FastAPI</div>
+          <div class="rc-desc">Shorter, beginner-friendly version. Good first read before the more detailed guides above.</div>
+        </a>
+      </div>
+    </div>
+
+    <div class="res-category">
+      <h3>Data Validation — Task 5</h3>
+      <div class="res-cards">
+        <a class="res-card" href="https://www.datacamp.com/tutorial/great-expectations-tutorial" target="_blank">
+          <div class="rc-type rc-guide">Guide &middot; DataCamp</div>
+          <div class="rc-title">Great Expectations Tutorial — Validating Data with Python</div>
+          <div class="rc-desc">Practical tutorial covering setup, writing expectations, and running validations in a pipeline. Start here for Task 5.</div>
+        </a>
+        <a class="res-card" href="https://towardsdatascience.com/getting-started-with-great-expectations-a-guide-to-data-validation-in-python-95a8ffc2b747/" target="_blank">
+          <div class="rc-type rc-guide">Guide &middot; Towards Data Science</div>
+          <div class="rc-title">Getting Started with Great Expectations</div>
+          <div class="rc-desc">Covers data profiling, automated testing, and documentation generation. Helps us prove data quality at every pipeline stage.</div>
+        </a>
+      </div>
+    </div>
+
+    <div class="res-category">
+      <h3>Key Tool Sites — Bookmark These</h3>
+      <div class="res-cards">
+        <a class="res-card" href="https://kafka.apache.org/" target="_blank">
+          <div class="rc-type rc-tool">Tool Site</div>
+          <div class="rc-title">Apache Kafka — Official Site</div>
+          <div class="rc-desc">Downloads, docs, quickstart, and community. The source of truth for all things Kafka.</div>
+        </a>
+        <a class="res-card" href="https://spark.apache.org/" target="_blank">
+          <div class="rc-type rc-tool">Tool Site</div>
+          <div class="rc-title">Apache Spark — Official Site</div>
+          <div class="rc-desc">Official Spark site with docs for all versions. Use for both batch and streaming processing.</div>
+        </a>
+        <a class="res-card" href="https://fastapi.tiangolo.com/" target="_blank">
+          <div class="rc-type rc-tool">Tool Site</div>
+          <div class="rc-title">FastAPI — Official Documentation</div>
+          <div class="rc-desc">Interactive docs, tutorials, and full reference. FastAPI auto-generates a live API testing UI — great for demos.</div>
+        </a>
+        <a class="res-card" href="https://mlflow.org/" target="_blank">
+          <div class="rc-type rc-tool">Tool Site</div>
+          <div class="rc-title">MLflow — Official Site</div>
+          <div class="rc-desc">Open-source platform for ML experiment tracking, model registry, and deployment. Free and widely used in industry.</div>
+        </a>
+        <a class="res-card" href="https://greatexpectations.io/" target="_blank">
+          <div class="rc-type rc-tool">Tool Site</div>
+          <div class="rc-title">Great Expectations — Official Site</div>
+          <div class="rc-desc">The leading open-source data validation tool for Python pipelines. Generates human-readable validation reports automatically.</div>
+        </a>
+        <a class="res-card" href="https://scikit-learn.org/stable/" target="_blank">
+          <div class="rc-type rc-tool">Tool Site</div>
+          <div class="rc-title">scikit-learn — Official Documentation</div>
+          <div class="rc-desc">Full reference for every ML algorithm, preprocessing method, and evaluation metric available in scikit-learn.</div>
+        </a>
+      </div>
+    </div>
   </div>
 
   <!-- MINUTES OF MEETING -->
