@@ -4,8 +4,6 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>G2 Kickoff Meeting</title>
-  <script src="https://cdn.jsdelivr.net/npm/yjs/dist/yjs.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/y-webrtc/dist/y-webrtc.js"></script>
   <style>
     :root {
       --bg: #121212;
@@ -259,54 +257,58 @@
 
   const editor = document.getElementById('shared-notes');
 
-  // Yjs + y-webrtc: peer-to-peer CRDT sync.
-  // All browsers on the same room ID share the same document live — no server, no refresh.
-  const ydoc = new Y.Doc();
-  const ytext = ydoc.getText('g2-notes');
+  // Simple, guaranteed real-time sync via jsonblob.com (free, no auth, CORS-enabled)
+  // Polls every 1.5 seconds — updates appear on all screens without any refresh.
+  const BLOB = 'https://jsonblob.com/api/jsonBlob/019d4e73-7953-786b-bd77-e88982b9731e';
 
-  const provider = new WebrtcProvider('g2-kickoff-meeting-v1', ydoc, {
-    signaling: [
-      'wss://signaling.yjs.dev',
-      'wss://y-webrtc-signaling-eu.herokuapp.com',
-      'wss://y-webrtc-signaling-us.herokuapp.com'
-    ]
-  });
+  let lastRemoteTs  = 0;
+  let writeTimer    = null;
+  let isWriting     = false;
 
-  // Load local backup immediately so it feels instant on page load
+  // Load localStorage immediately so content shows instantly on page open
   const saved = localStorage.getItem('g2-notes-backup');
+  if (saved) editor.value = saved;
 
-  // Only seed from localStorage if the Yjs doc is empty (first ever load)
-  provider.on('synced', (synced) => {
-    if (synced && ytext.toString() === '' && saved) {
-      ydoc.transact(() => ytext.insert(0, saved));
-    }
-  });
-
-  // When Yjs document changes (from any peer) — update the textarea
-  ytext.observe(() => {
-    const newVal = ytext.toString();
-    if (newVal !== editor.value) {
-      const start = editor.selectionStart;
-      const end   = editor.selectionEnd;
-      editor.value = newVal;
-      if (document.activeElement === editor) editor.setSelectionRange(start, end);
-    }
-    localStorage.setItem('g2-notes-backup', newVal);
-  });
-
-  // When the user types — update the Yjs document (which syncs to all peers)
+  // WRITE — debounced 400ms after last keystroke to avoid hammering the API
   editor.addEventListener('input', () => {
-    const current = ytext.toString();
-    const next    = editor.value;
-    if (current !== next) {
-      // Replace entire text via a single transaction
-      ydoc.transact(() => {
-        ytext.delete(0, current.length);
-        ytext.insert(0, next);
-      });
-    }
-    localStorage.setItem('g2-notes-backup', next);
+    const val = editor.value;
+    localStorage.setItem('g2-notes-backup', val);
+    clearTimeout(writeTimer);
+    writeTimer = setTimeout(() => {
+      isWriting = true;
+      fetch(BLOB, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text: val, ts: Date.now() })
+      }).finally(() => { isWriting = false; });
+    }, 400);
   });
+
+  // READ — poll every 1.5 seconds; update textarea only if remote is newer
+  async function poll() {
+    try {
+      const res  = await fetch(BLOB, { cache: 'no-store' });
+      const data = await res.json();
+      if (
+        data &&
+        typeof data.text === 'string' &&
+        data.ts > lastRemoteTs &&
+        data.text !== editor.value &&
+        !isWriting
+      ) {
+        lastRemoteTs = data.ts;
+        const start = editor.selectionStart;
+        const end   = editor.selectionEnd;
+        editor.value = data.text;
+        if (document.activeElement === editor) editor.setSelectionRange(start, end);
+        localStorage.setItem('g2-notes-backup', data.text);
+      }
+    } catch (e) {}
+    setTimeout(poll, 1500);
+  }
+
+  // Start polling immediately
+  poll();
 </script>
 </body>
 </html>
