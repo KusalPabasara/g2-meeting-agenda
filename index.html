@@ -106,36 +106,36 @@
 
     <!-- MAP/CHART BLOCK -->
     <div class="map-block">
-      <h2>🗺️ G2 Scope & Innovation Map</h2>
-      <p style="color: #aaa; font-size: 0.95rem; margin-top: -10px; margin-bottom: 1.5rem;">Visual breakdown of our strict "Must-Do" requirements vs. "Beyond" ideas we can brainstorm to stand out.</p>
+      <h2>🗺️ G2 Scope, Blueprint & Innovations</h2>
+      <p style="color: #aaa; font-size: 0.95rem; margin-top: -10px; margin-bottom: 1.5rem;">Visual breakdown of our assigned scope, our development blueprint, and optional brainstorm ideas.</p>
       
       <div class="mermaid" style="text-align: center;">
-        graph LR
-          G2[🚌 G2: Data & Intelligence] --> Core[✅ Core Must-Do Tasks]
-          G2 --> Extra[💡 Beyond Assignment Ideas]
+        graph TD
+          G2[🚌 G2: Data & Intelligence] --> Scope[📋 Assigned Responsibilities]
+          G2 --> Blue[🏗️ Development Blueprint]
+          G2 --> Ideas[💡 Innovation Ideas]
 
-          Core --> Ingest[Data Ingestion & Storage]
-          Core --> Process[Stream & Batch Processing]
-          Core --> ML[AI/ML: ETA Prediction Models]
-          Core --> Analytics[Prediction API & Analytics]
-          Core --> Valid[Data Validation & Quality]
+          Scope --- S1[Data Ingestion & Storage]
+          Scope --- S2[Stream & Batch Processing]
+          Scope --- S3[AI/ML ETA Models]
+          Scope --- S4[Prediction API & Analytics]
+          Scope --- S5[Data Validation]
 
-          Extra --> Wx[Weather-Aware ETA Modeling]
-          Extra --> Crowd[Crowdsourced Delay Reports]
-          Extra --> Anomaly[Anomaly/Accident Detection]
-          Extra --> Dash[Live Performance Dashboard]
+          Blue --> B1[Phase 1: Ingestion Pipelines]
+          B1 --> B2[Phase 2: Data Processing & Quality]
+          B2 --> B3[Phase 3: Model Training]
+          B3 --> B4[Phase 4: API Serving to Other Groups]
+
+          Ideas --- I1[Weather Integration?]
+          Ideas --- I2[Live Dashboards?]
+          Ideas --- I3[Anomaly Detection?]
 
           classDef main fill:#4ade80,stroke:#fff,stroke-width:2px,color:#000,font-weight:bold;
-          classDef core fill:#3b82f6,stroke:#fff,stroke-width:2px,color:#fff,font-weight:bold;
-          classDef extra fill:#f59e0b,stroke:#fff,stroke-width:2px,color:#000,font-weight:bold;
-          classDef subcore fill:#1e3a8a,stroke:#3b82f6,stroke-width:1px,color:#fff;
-          classDef subextra fill:#78350f,stroke:#f59e0b,stroke-width:1px,color:#fff,stroke-dasharray: 5 5;
-
+          classDef cat fill:#3b82f6,stroke:#fff,stroke-width:2px,color:#fff,font-weight:bold;
+          classDef node fill:#1e3a8a,stroke:#3b82f6,stroke-width:1px,color:#fff;
           class G2 main;
-          class Core core;
-          class Extra extra;
-          class Ingest,Process,ML,Analytics,Valid subcore;
-          class Wx,Crowd,Anomaly,Dash subextra;
+          class Scope,Blue,Ideas cat;
+          class S1,S2,S3,S4,S5,B1,B2,B3,B4,I1,I2,I3 node;
       </div>
     </div>
 
@@ -152,10 +152,10 @@
 
     <!-- TASK 2 -->
     <div class="task-block">
-      <h2>2. Our Scope & Ideas</h2>
-      <div class="task-desc">Refer to the map above! What extra "Beyond" ideas should we actually build to stand out?</div>
+      <h2>2. Development Blueprint & Innovations</h2>
+      <div class="task-desc">Refer to the map above. What are your thoughts on our 4-Phase Blueprint? Any optional "Beyond" ideas we should try?</div>
       <div class="input-group">
-        <input type="text" id="input-2" placeholder="Let's build the weather integration..." onkeypress="if(event.key==='Enter') addIdea('2')">
+        <input type="text" id="input-2" placeholder="Let's start with Phase 1..." onkeypress="if(event.key==='Enter') addIdea('2')">
         <button onclick="addIdea('2')">Add</button>
       </div>
       <div class="idea-list" id="list-2"></div>
@@ -163,10 +163,10 @@
 
     <!-- TASK 3 -->
     <div class="task-block">
-      <h2>3. Tech Stack Check</h2>
-      <div class="task-desc">PyTorch vs TensorFlow? Kafka for streams? PostgreSQL vs InfluxDB?</div>
+      <h2>3. Cross-Group Coordination 🤝</h2>
+      <div class="task-desc">How do we plan to talk with the other main groups today? What data do we need from them? What do we provide to them?</div>
       <div class="input-group">
-        <input type="text" id="input-3" placeholder="I prefer PyTorch because..." onkeypress="if(event.key==='Enter') addIdea('3')">
+        <input type="text" id="input-3" placeholder="We need to ask Group 1 for..." onkeypress="if(event.key==='Enter') addIdea('3')">
         <button onclick="addIdea('3')">Add</button>
       </div>
       <div class="idea-list" id="list-3"></div>
@@ -174,10 +174,10 @@
 
     <!-- TASK 4 -->
     <div class="task-block">
-      <h2>4. Roles Assignment</h2>
-      <div class="task-desc">Who wants to handle ML models? Data Pipelines? FastAPI? Validation?</div>
+      <h2>4. Tech Stack Check</h2>
+      <div class="task-desc">PyTorch vs TensorFlow? Kafka for streams? PostgreSQL vs InfluxDB?</div>
       <div class="input-group">
-        <input type="text" id="input-4" placeholder="I can take the API side..." onkeypress="if(event.key==='Enter') addIdea('4')">
+        <input type="text" id="input-4" placeholder="I prefer PyTorch because..." onkeypress="if(event.key==='Enter') addIdea('4')">
         <button onclick="addIdea('4')">Add</button>
       </div>
       <div class="idea-list" id="list-4"></div>
@@ -185,13 +185,24 @@
 
     <!-- TASK 5 -->
     <div class="task-block">
-      <h2>5. Next Steps</h2>
-      <div class="task-desc">Setup GitHub, create comms group (WhatsApp/Discord), install tools.</div>
+      <h2>5. Roles Assignment</h2>
+      <div class="task-desc">Who wants to handle ML models? Data Pipelines? FastAPI? Validation?</div>
       <div class="input-group">
-        <input type="text" id="input-5" placeholder="Let's use Discord for comms..." onkeypress="if(event.key==='Enter') addIdea('5')">
+        <input type="text" id="input-5" placeholder="I can take the API side..." onkeypress="if(event.key==='Enter') addIdea('5')">
         <button onclick="addIdea('5')">Add</button>
       </div>
       <div class="idea-list" id="list-5"></div>
+    </div>
+
+    <!-- TASK 6 -->
+    <div class="task-block">
+      <h2>6. Next Steps</h2>
+      <div class="task-desc">Setup GitHub, create comms group (WhatsApp/Discord), install tools.</div>
+      <div class="input-group">
+        <input type="text" id="input-6" placeholder="Let's use Discord for comms..." onkeypress="if(event.key==='Enter') addIdea('6')">
+        <button onclick="addIdea('6')">Add</button>
+      </div>
+      <div class="idea-list" id="list-6"></div>
     </div>
 
   </div>
@@ -202,8 +213,9 @@
 
     // Initialize Gun.js for real-time sync
     const gun = Gun(['https://gun-manhattan.herokuapp.com/gun', 'https://relay.peer.ooo/gun']);
-    const app = gun.get('g2-kickoff-per-task-v2');
-    const tasks = ['1', '2', '3', '4', '5'];
+    // Update namespace so it resets for the new 6-task format
+    const app = gun.get('g2-kickoff-per-task-v3');
+    const tasks = ['1', '2', '3', '4', '5', '6'];
 
     function uuid() {
       return Math.random().toString(36).substring(2) + Date.now().toString(36);
