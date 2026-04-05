@@ -237,42 +237,99 @@
     <p style="color:#aaa; margin-top:-10px; margin-bottom:1.5rem; font-size:0.95rem;">Click on any task to see a simple explanation of what it means for our team.</p>
 
     <div class="accordion-item">
-      <div class="accordion-header" onclick="toggleAccordion('desc-1')">1. Data Ingestion &amp; Storage <span>+</span></div>
+      <div class="accordion-header" onclick="toggleAccordion('desc-req1')">1. What We Need from Group 1 (GPS / Hardware Team) <span>+</span></div>
+      <div class="accordion-content" id="desc-req1">
+        <p><strong>We need Group 1 to agree on and provide the following data before we can build anything:</strong></p>
+        <p><strong>Primary stream — Live GPS feed (via Kafka topic)</strong></p>
+        <ul>
+          <li><code>bus_id</code> — unique identifier for each bus</li>
+          <li><code>route_id</code> — which route the bus is currently on</li>
+          <li><code>latitude</code>, <code>longitude</code> — current GPS position (decimal degrees)</li>
+          <li><code>timestamp</code> — UTC epoch milliseconds of the reading</li>
+          <li><code>speed_kmh</code> — current speed in km/h (if available from sensor)</li>
+          <li><code>heading</code> — direction of travel in degrees (optional but useful)</li>
+        </ul>
+        <p><strong>Expected frequency:</strong> Every 5–10 seconds per bus. We will buffer these in Kafka and process the stream via Apache Flink at the edge before storage.</p>
+        <p><strong>Bypass path:</strong> Raw GPS pings can also be forwarded directly to Group 3 (frontend/display) for live map rendering — they do not need to wait for our ETA model for that. Our pipeline handles the intelligence layer on top.</p>
+        <p><strong>Static reference data (one-time or daily refresh)</strong></p>
+        <ul>
+          <li>List of all bus stops: <code>stop_id</code>, <code>stop_name</code>, <code>latitude</code>, <code>longitude</code></li>
+          <li>Route definitions: ordered sequence of stops per route with distance between each consecutive stop (in metres) — we need this as a staircase of distances, e.g. Stop A → Stop B = 320 m, Stop B → Stop C = 540 m</li>
+          <li>Scheduled timetables: expected arrival time per stop per route (GTFS format preferred)</li>
+        </ul>
+        <p><strong>Nice to have from Group 1:</strong> Passenger count per bus if sensors support it — useful as a dwell-time feature for our model.</p>
+        <p style="color:#4ade80; font-weight:bold;">Action: Send this list to Group 1 and get written confirmation of format and frequency before we start building the ingestion pipeline.</p>
+      </div>
+    </div>
+
+    <div class="accordion-item">
+      <div class="accordion-header" onclick="toggleAccordion('desc-req2')">2. What We Will Give to Group 3 (Frontend / App Team) <span>+</span></div>
+      <div class="accordion-content" id="desc-req2">
+        <p><strong>Our prediction API will expose an endpoint that Group 3 can call. Here is the agreed contract we need to confirm with them:</strong></p>
+        <p><strong>Basic Level — ETA for major stops only</strong><br>First version of the model. Covers main stops on each route.</p>
+        <p>Request (GET):</p>
+        <pre style="background:#111; padding:0.7rem 1rem; border-radius:6px; font-size:0.85rem; color:#86efac; overflow-x:auto;">/api/eta?route_id=138&amp;bus_id=BUS042&amp;from_stop=Pettah&amp;to_stop=Nugegoda</pre>
+        <p>Response (JSON):</p>
+        <pre style="background:#111; padding:0.7rem 1rem; border-radius:6px; font-size:0.85rem; color:#86efac; overflow-x:auto;">{
+  "bus_id": "BUS042",
+  "route_id": "138",
+  "stop_id": "Nugegoda",
+  "eta_minutes": 7,
+  "confidence": "medium",
+  "last_known_position": { "lat": 6.8975, "lng": 79.8554 },
+  "timestamp": "2025-04-05T13:00:00Z"
+}</pre>
+        <p><strong>Fine-tuned Level — ETA for any stop on the route</strong><br>Once our model is trained with enough data, we extend predictions to every stop — not just major ones. Same API, same format.</p>
+        <p><strong>Google Maps API usage:</strong> We will use the Google Maps Distance Matrix / Roads API to get accurate road distances between stops (to fill gaps where Group 1 cannot provide exact distances) and for map snapping of GPS coordinates to the nearest road.</p>
+        <p><strong>Model input summary:</strong></p>
+        <ul>
+          <li>Current GPS position of the bus</li>
+          <li>Distance from current position to each upcoming stop (staircase from route definition)</li>
+          <li>Time of day, day of week, is rush hour</li>
+          <li>Current speed and heading</li>
+          <li>Historical average delay for this route at this time</li>
+        </ul>
+        <p style="color:#4ade80; font-weight:bold;">Action: Send this API spec to Group 3 and confirm the fields they need before we finalise the model output layer.</p>
+      </div>
+    </div>
+
+    <div class="accordion-item">
+      <div class="accordion-header" onclick="toggleAccordion('desc-1')">3. Data Ingestion &amp; Storage <span>+</span></div>
       <div class="accordion-content" id="desc-1">
         <strong>What this means:</strong> We set up systems that collect raw data — like live GPS locations from buses and timetable schedules — and store them securely in databases. Think of it as building the plumbing that brings water into the house. Nothing else can work until this is in place.
       </div>
     </div>
 
     <div class="accordion-item">
-      <div class="accordion-header" onclick="toggleAccordion('desc-2')">2. Stream &amp; Batch Processing <span>+</span></div>
+      <div class="accordion-header" onclick="toggleAccordion('desc-2')">4. Stream &amp; Batch Processing <span>+</span></div>
       <div class="accordion-content" id="desc-2">
         <strong>What this means:</strong> Handling data in two ways. "Stream" processing deals with live data the moment it arrives — updating a map in real time. "Batch" processing analyzes large amounts of old data at once, like running a nightly report to find recurring traffic patterns.
       </div>
     </div>
 
     <div class="accordion-item">
-      <div class="accordion-header" onclick="toggleAccordion('desc-3')">3. AI/ML ETA Models <span>+</span></div>
+      <div class="accordion-header" onclick="toggleAccordion('desc-3')">5. AI/ML ETA Models <span>+</span></div>
       <div class="accordion-content" id="desc-3">
         <strong>What this means:</strong> Using algorithms to predict exactly when a bus will arrive at a stop. The model learns from historical patterns — traffic, time of day, weather — to give commuters a reliable Estimated Time of Arrival (ETA). This is our most important deliverable.
       </div>
     </div>
 
     <div class="accordion-item">
-      <div class="accordion-header" onclick="toggleAccordion('desc-4')">4. Prediction API &amp; Analytics <span>+</span></div>
+      <div class="accordion-header" onclick="toggleAccordion('desc-4')">6. Prediction API &amp; Analytics <span>+</span></div>
       <div class="accordion-content" id="desc-4">
         <strong>What this means:</strong> Building a digital interface (an API) that other groups — like the team building the mobile app — can call to get ETA predictions from us. When they ask "when is Bus 47 arriving?", our system answers in under a second.
       </div>
     </div>
 
     <div class="accordion-item">
-      <div class="accordion-header" onclick="toggleAccordion('desc-5')">5. Data Validation &amp; Quality <span>+</span></div>
+      <div class="accordion-header" onclick="toggleAccordion('desc-5')">7. Data Validation &amp; Quality <span>+</span></div>
       <div class="accordion-content" id="desc-5">
         <strong>What this means:</strong> Automatic checks that catch corrupt or impossible data before it breaks our models. If a GPS tracker reports a bus in the ocean, or a timestamp jumps backwards in time, these checks flag it so we never train our AI on bad data.
       </div>
     </div>
 
     <div class="accordion-item">
-      <div class="accordion-header" onclick="toggleAccordion('desc-6')">6. Cross-Group Coordination <span>+</span></div>
+      <div class="accordion-header" onclick="toggleAccordion('desc-6')">8. Cross-Group Coordination <span>+</span></div>
       <div class="accordion-content" id="desc-6">
         <strong>What this means:</strong> Talking with other sub-groups to agree on contracts. We need to know: what format will the hardware/GPS team send us data in, and what format does the frontend team expect us to return predictions in? This prevents integration failures later.
       </div>
