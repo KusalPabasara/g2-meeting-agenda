@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>G2 Kickoff Meeting</title>
+  <script src="https://cdn.jsdelivr.net/npm/gun/gun.js"></script>
+  <style>
+    :root {
+      --bg: #121212;
+      --surface: #1e1e1e;
+      --text: #e0e0e0;
+      --accent: #4ade80;
+      --border: #333;
+    }
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      margin: 0;
+      padding: 2rem;
+      line-height: 1.5;
+    }
+    .container { max-width: 960px; margin: 0 auto; }
+    h1 { color: var(--accent); margin-bottom: 0.5rem; font-size: 2rem; }
+    .subtitle { color: #888; margin-bottom: 2rem; font-size: 1.1rem; border-bottom: 1px solid var(--border); padding-bottom: 1rem; }
+    .live-indicator { font-size: 0.9rem; color: var(--accent); animation: blink 2s infinite; font-weight: normal; margin-left: 10px; }
+    @keyframes blink { 50% { opacity: 0.5; } }
+
+    /* MAP */
+    .map-block {
+      background: #161616;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      margin-bottom: 2.5rem;
+      padding: 1.5rem;
+    }
+    .map-block h2 { margin-top: 0; font-size: 1.4rem; border-bottom: 1px solid var(--border); padding-bottom: 0.5rem; margin-bottom: 1.2rem; color: #fff; }
+    .map-block svg { display: block; width: 100%; min-height: 680px; height: auto; }
+    .map-node { transition: opacity 0.2s; cursor: default; }
+    .map-node:hover rect, .map-node:hover circle { opacity: 0.85; }
+
+    /* Accordion */
+    .accordion-section { margin-bottom: 2.5rem; }
+    .accordion-section h2 { font-size: 1.4rem; border-bottom: 1px solid var(--border); padding-bottom: 0.5rem; margin-bottom: 1rem; color: #fff; }
+    .accordion-item { background: var(--surface); border: 1px solid var(--border); border-radius: 6px; margin-bottom: 0.8rem; overflow: hidden; }
+    .accordion-header { padding: 1.2rem 1.5rem; cursor: pointer; background: #252525; font-weight: bold; font-size: 1.1rem; display: flex; justify-content: space-between; align-items: center; user-select: none; }
+    .accordion-header:hover { background: #2a2a2a; }
+    .accordion-content { padding: 0 1.5rem; max-height: 0; overflow: hidden; transition: max-height 0.3s ease-out, padding 0.3s ease; background: var(--surface); color: #ccc; }
+    .accordion-content.active { padding: 1.2rem 1.5rem; max-height: 500px; border-top: 1px solid var(--border); }
+
+    /* Tool tags */
+    .tool-row { display: flex; flex-wrap: wrap; gap: 0.4rem; margin: 0.5rem 0 0.8rem; }
+    .tool-tag { background: #0f2a1a; border: 1px solid #2d5a3d; color: #4ade80; font-size: 0.8rem; padding: 0.2rem 0.65rem; border-radius: 20px; font-family: monospace; }
+
+    /* Team Ideas Feed */
+    .ideas-block { background: var(--surface); padding: 1.5rem; border-radius: 8px; border: 1px solid #444; margin-bottom: 2rem; }
+    .ideas-block h2 { margin-top: 0; font-size: 1.4rem; border-bottom: 1px solid var(--border); padding-bottom: 0.5rem; margin-bottom: 0.6rem; color: #fff; }
+    .ideas-block p { color: #aaa; font-size: 0.93rem; margin-bottom: 1rem; }
+    .ideas-input-row { display: flex; gap: 0.6rem; flex-wrap: wrap; margin-bottom: 1rem; }
+    .ideas-input-row input { background: #2a2a2a; border: 1px solid var(--border); color: #fff; padding: 0.7rem 1rem; border-radius: 6px; font-size: 1rem; font-family: inherit; outline: none; }
+    .ideas-input-row input:focus { border-color: var(--accent); }
+    #idea-name { width: 130px; flex-shrink: 0; }
+    #idea-text { flex: 1; min-width: 180px; }
+    .idea-send-btn { background: var(--accent); color: #000; border: none; padding: 0.7rem 1.3rem; border-radius: 6px; font-weight: bold; font-size: 1rem; cursor: pointer; }
+    .idea-send-btn:hover { opacity: 0.85; }
+    .ideas-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 0.5rem; }
+    .ideas-list li { background: #2a2a2a; border-left: 4px solid var(--accent); border-radius: 5px; padding: 0.65rem 1rem; }
+    .ideas-list li .i-name { font-weight: bold; color: var(--accent); font-size: 0.88rem; margin-bottom: 0.2rem; }
+    .ideas-list li .i-text { color: #e0e0e0; font-size: 0.97rem; }
+    /* Minutes of Meeting */
+    .mom-block { background: var(--surface); padding: 1.5rem; border-radius: 8px; border: 1px solid #555; margin-bottom: 2rem; }
+    .mom-block h2 { margin-top: 0; font-size: 1.4rem; border-bottom: 1px solid var(--border); padding-bottom: 0.5rem; margin-bottom: 0.8rem; color: #fff; }
+    .mom-block p { color: #aaa; font-size: 0.93rem; margin-bottom: 1rem; }
+    .mom-input-row { display: flex; gap: 0.6rem; margin-bottom: 1rem; }
+    .mom-input-row input { flex: 1; background: #2a2a2a; border: 1px solid var(--border); color: #fff; padding: 0.75rem 1rem; border-radius: 6px; font-size: 1rem; font-family: inherit; outline: none; }
+    .mom-input-row input:focus { border-color: var(--accent); }
+    .mom-add-btn { background: #333; color: #e0e0e0; border: 1px solid #555; padding: 0.75rem 1.2rem; border-radius: 6px; font-size: 1rem; cursor: pointer; white-space: nowrap; }
+    .mom-add-btn:hover { background: #444; }
+    .mom-list { list-style: none; margin: 0; padding: 0; }
+    .mom-list li { background: #2a2a2a; border-left: 4px solid #888; border-radius: 5px; padding: 0.65rem 1rem; margin-bottom: 0.5rem; color: #e0e0e0; font-size: 0.97rem; display: flex; justify-content: space-between; align-items: flex-start; gap: 0.5rem; }
+    .mom-list li span { flex: 1; }
+    .mom-del { background: none; border: none; color: #555; cursor: pointer; font-size: 1rem; padding: 0; line-height: 1; flex-shrink: 0; }
+    .mom-del:hover { color: #e55; }
+    @keyframes fadeIn { from { opacity:0; transform:translateY(-4px); } to { opacity:1; transform:translateY(0); } }
+
+    /* Resources */
+    .resources-block { margin-bottom: 2.5rem; }
+    .resources-block > h2 { font-size: 1.4rem; border-bottom: 1px solid var(--border); padding-bottom: 0.5rem; margin-bottom: 0.4rem; color: #fff; }
+    .resources-block > p { color: #aaa; font-size: 0.93rem; margin-bottom: 1.2rem; }
+    .res-category { margin-bottom: 1.5rem; }
+    .res-category h3 { font-size: 1rem; color: #aaa; text-transform: uppercase; letter-spacing: 0.06em; margin: 0 0 0.7rem; font-weight: 600; }
+    .res-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 0.7rem; }
+    .res-card { background: #1e1e1e; border: 1px solid var(--border); border-radius: 8px; padding: 0.9rem 1rem; text-decoration: none; display: block; transition: border-color 0.2s, background 0.2s; }
+    .res-card:hover { border-color: var(--accent); background: #252525; }
+    .res-card .rc-type { font-size: 0.72rem; font-weight: bold; text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 0.35rem; }
+    .rc-paper { color: #60a5fa; }
+    .rc-docs  { color: #a78bfa; }
+    .rc-guide { color: #fb923c; }
+    .rc-tool  { color: #4ade80; }
+    .res-card .rc-title { font-size: 0.97rem; font-weight: bold; color: #e0e0e0; margin-bottom: 0.25rem; line-height: 1.35; }
+    .res-card .rc-desc  { font-size: 0.83rem; color: #888; line-height: 1.4; }
+  </style>
+</head>
+<body>
+<div class="container">
+  <h1>G2: Data & Intelligence Kickoff <span class="live-indicator">&#9679; Real-time Sync Active</span></h1>
+  <div class="subtitle">Public Transport System — Task Breakdown and Shared Workspace</div>
+
+  <!-- MIND MAP -->
+  <div class="map-block">
+    <h2>Scope, Blueprint &amp; Innovations Map</h2>
+    <svg viewBox="0 0 1100 700" xmlns="http://www.w3.org/2000/svg" aria-label="G2 Mind Map">
+      <defs>
+        <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+          <feDropShadow dx="0" dy="2" stdDeviation="6" flood-color="rgba(74,222,128,0.12)"/>
+        </filter>
+        <filter id="glow-subtle" x="-20%" y="-20%" width="140%" height="140%">
+          <feDropShadow dx="0" dy="2" stdDeviation="4" flood-color="rgba(0,0,0,0.4)"/>
+        </filter>
+        <marker id="arr" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto">
+          <path d="M0,0 L0,6 L8,3 z" fill="#4ade80" opacity="0.6"/>
+        </marker>
+      </defs>
+
+      <!-- background -->
+      <rect x="0" y="0" width="1100" height="700" fill="#161616" rx="10"/>
+
+      <!-- ── CONNECTOR LINES ── -->
+      <!-- Root → Scope hub -->
+      <path d="M 550 88 C 550 150 175 150 175 210" stroke="#4ade80" stroke-width="1.5" fill="none" opacity="0.25"/>
+      <!-- Root → Blueprint -->
+      <path d="M 550 88 L 550 200" stroke="#4ade80" stroke-width="1.5" fill="none" opacity="0.25"/>
+      <!-- Root → Ideas hub -->
+      <path d="M 550 88 C 550 150 925 150 925 210" stroke="#4ade80" stroke-width="1.5" fill="none" opacity="0.25"/>
+
+      <!-- Scope hub → leaves -->
+      <path d="M 175 260 C 175 295 120 295 120 310" stroke="#94a3b8" stroke-width="1.2" fill="none" opacity="0.3"/>
+      <path d="M 175 260 C 175 355 120 355 120 380" stroke="#94a3b8" stroke-width="1.2" fill="none" opacity="0.3"/>
+      <path d="M 175 260 C 175 415 120 415 120 450" stroke="#94a3b8" stroke-width="1.2" fill="none" opacity="0.3"/>
+      <path d="M 175 260 C 175 475 120 475 120 520" stroke="#94a3b8" stroke-width="1.2" fill="none" opacity="0.3"/>
+      <path d="M 175 260 C 175 545 120 545 120 590" stroke="#94a3b8" stroke-width="1.2" fill="none" opacity="0.3"/>
+
+      <!-- Blueprint chain arrows -->
+      <path d="M 550 250 L 550 310" stroke="#4ade80" stroke-width="1.5" fill="none" opacity="0.4" marker-end="url(#arr)"/>
+      <path d="M 550 360 L 550 420" stroke="#4ade80" stroke-width="1.5" fill="none" opacity="0.4" marker-end="url(#arr)"/>
+      <path d="M 550 470 L 550 530" stroke="#4ade80" stroke-width="1.5" fill="none" opacity="0.4" marker-end="url(#arr)"/>
+
+      <!-- Ideas hub → leaves -->
+      <path d="M 925 260 C 925 295 980 295 980 310" stroke="#94a3b8" stroke-width="1.2" fill="none" opacity="0.3"/>
+      <path d="M 925 260 C 925 375 980 375 980 390" stroke="#94a3b8" stroke-width="1.2" fill="none" opacity="0.3"/>
+      <path d="M 925 260 C 925 455 980 455 980 470" stroke="#94a3b8" stroke-width="1.2" fill="none" opacity="0.3"/>
+
+      <!-- ── ROOT NODE ── -->
+      <g class="map-node">
+        <rect x="400" y="20" width="300" height="64" rx="10" fill="#0f2a1a" stroke="#4ade80" stroke-width="1.5" filter="url(#glow)"/>
+        <text x="550" y="57" text-anchor="middle" font-size="17" font-weight="bold" fill="#4ade80" font-family="system-ui, sans-serif">G2: Data &amp; Intelligence</text>
+      </g>
+
+      <!-- Branch Labels -->
+      <text x="175" y="196" text-anchor="middle" font-size="10" fill="#4ade80" font-family="system-ui, sans-serif" letter-spacing="0.12em" font-weight="600" opacity="0.7">SCOPE</text>
+      <text x="550" y="189" text-anchor="middle" font-size="10" fill="#4ade80" font-family="system-ui, sans-serif" letter-spacing="0.12em" font-weight="600" opacity="0.7">BLUEPRINT</text>
+      <text x="925" y="196" text-anchor="middle" font-size="10" fill="#4ade80" font-family="system-ui, sans-serif" letter-spacing="0.12em" font-weight="600" opacity="0.7">OPTIONAL IDEAS</text>
+
+      <!-- ── SCOPE HUB ── -->
+      <g class="map-node">
+        <rect x="65" y="210" width="220" height="48" rx="8" fill="#1e2d1e" stroke="#4ade80" stroke-width="1" filter="url(#glow-subtle)"/>
+        <text x="175" y="239" text-anchor="middle" font-size="13" font-weight="600" fill="#a3e8a3" font-family="system-ui, sans-serif">Assigned Responsibilities</text>
+      </g>
+
+      <!-- Scope Leaves -->
+      <g class="map-node">
+        <rect x="20" y="310" width="210" height="42" rx="6" fill="#1a1f1a" stroke="#334d33" stroke-width="1" filter="url(#glow-subtle)"/>
+        <text x="125" y="336" text-anchor="middle" font-size="12" fill="#86efac" font-family="system-ui, sans-serif">Data Ingestion &amp; Storage</text>
+      </g>
+      <g class="map-node">
+        <rect x="20" y="380" width="210" height="42" rx="6" fill="#1a1f1a" stroke="#334d33" stroke-width="1" filter="url(#glow-subtle)"/>
+        <text x="125" y="406" text-anchor="middle" font-size="12" fill="#86efac" font-family="system-ui, sans-serif">Stream &amp; Batch Processing</text>
+      </g>
+      <g class="map-node">
+        <rect x="20" y="450" width="210" height="42" rx="6" fill="#1a1f1a" stroke="#334d33" stroke-width="1" filter="url(#glow-subtle)"/>
+        <text x="125" y="476" text-anchor="middle" font-size="12" fill="#86efac" font-family="system-ui, sans-serif">AI/ML ETA Models</text>
+      </g>
+      <g class="map-node">
+        <rect x="20" y="520" width="210" height="42" rx="6" fill="#1a1f1a" stroke="#334d33" stroke-width="1" filter="url(#glow-subtle)"/>
+        <text x="125" y="546" text-anchor="middle" font-size="12" fill="#86efac" font-family="system-ui, sans-serif">Prediction API &amp; Analytics</text>
+      </g>
+      <g class="map-node">
+        <rect x="20" y="590" width="210" height="42" rx="6" fill="#1a1f1a" stroke="#334d33" stroke-width="1" filter="url(#glow-subtle)"/>
+        <text x="125" y="616" text-anchor="middle" font-size="12" fill="#86efac" font-family="system-ui, sans-serif">Data Validation</text>
+      </g>
+
+      <!-- ── BLUEPRINT CHAIN ── -->
+      <g class="map-node">
+        <rect x="425" y="200" width="250" height="48" rx="8" fill="#1a2a1a" stroke="#4ade80" stroke-width="1" filter="url(#glow-subtle)"/>
+        <text x="550" y="229" text-anchor="middle" font-size="13" font-weight="600" fill="#a3e8a3" font-family="system-ui, sans-serif">Phase 1: Ingestion Pipelines</text>
+      </g>
+      <g class="map-node">
+        <rect x="425" y="310" width="250" height="48" rx="8" fill="#1a2a1a" stroke="#4ade80" stroke-width="1" filter="url(#glow-subtle)"/>
+        <text x="550" y="330" text-anchor="middle" font-size="12" font-weight="600" fill="#a3e8a3" font-family="system-ui, sans-serif">Phase 2: Processing</text>
+        <text x="550" y="348" text-anchor="middle" font-size="12" font-weight="600" fill="#a3e8a3" font-family="system-ui, sans-serif">&amp; Quality Checks</text>
+      </g>
+      <g class="map-node">
+        <rect x="425" y="420" width="250" height="48" rx="8" fill="#1a2a1a" stroke="#4ade80" stroke-width="1" filter="url(#glow-subtle)"/>
+        <text x="550" y="449" text-anchor="middle" font-size="13" font-weight="600" fill="#a3e8a3" font-family="system-ui, sans-serif">Phase 3: Model Training</text>
+      </g>
+      <g class="map-node">
+        <rect x="425" y="530" width="250" height="48" rx="8" fill="#1a2a1a" stroke="#4ade80" stroke-width="1" filter="url(#glow-subtle)"/>
+        <text x="550" y="559" text-anchor="middle" font-size="13" font-weight="600" fill="#a3e8a3" font-family="system-ui, sans-serif">Phase 4: API Serving</text>
+      </g>
+
+      <!-- ── IDEAS HUB ── -->
+      <g class="map-node">
+        <rect x="815" y="210" width="220" height="48" rx="8" fill="#22201a" stroke="#a8966a" stroke-width="1" filter="url(#glow-subtle)"/>
+        <text x="925" y="239" text-anchor="middle" font-size="13" font-weight="600" fill="#d4b896" font-family="system-ui, sans-serif">Innovation Ideas</text>
+      </g>
+
+      <!-- Ideas Leaves -->
+      <g class="map-node">
+        <rect x="870" y="310" width="200" height="42" rx="6" fill="#1e1c17" stroke="#5a4e35" stroke-width="1" filter="url(#glow-subtle)"/>
+        <text x="970" y="336" text-anchor="middle" font-size="12" fill="#c9b07a" font-family="system-ui, sans-serif">Weather Integration</text>
+      </g>
+      <g class="map-node">
+        <rect x="870" y="390" width="200" height="42" rx="6" fill="#1e1c17" stroke="#5a4e35" stroke-width="1" filter="url(#glow-subtle)"/>
+        <text x="970" y="416" text-anchor="middle" font-size="12" fill="#c9b07a" font-family="system-ui, sans-serif">Live Dashboards</text>
+      </g>
+      <g class="map-node">
+        <rect x="870" y="470" width="200" height="42" rx="6" fill="#1e1c17" stroke="#5a4e35" stroke-width="1" filter="url(#glow-subtle)"/>
+        <text x="970" y="496" text-anchor="middle" font-size="12" fill="#c9b07a" font-family="system-ui, sans-serif">Anomaly Detection</text>
+      </g>
+    </svg>
+  </div>
+
+  <!-- TASK BREAKDOWN ACCORDION -->
+  <div class="accordion-section">
+    <h2>Task Breakdown</h2>
+    <p style="color:#aaa; margin-top:-10px; margin-bottom:1.5rem; font-size:0.95rem;">Click on any task to see a simple explanation of what it means for our team.</p>
+
+    <div class="accordion-item">
+      <div class="accordion-header" onclick="toggleAccordion('desc-req1')">1. What We Need from Group 1 (GPS / Hardware Team) <span>+</span></div>
+      <div class="accordion-content" id="desc-req1">
+        <p><strong>We need Group 1 to agree on and provide the following data before we can build anything:</strong></p>
+        <p><strong>Primary stream — Live GPS feed (via Kafka topic)</strong></p>
+        <ul>
+          <li><code>bus_id</code> — unique identifier for each bus</li>
+          <li><code>route_id</code> — which route the bus is currently on</li>
+          <li><code>latitude</code>, <code>longitude</code> — current GPS position (decimal degrees)</li>
+          <li><code>timestamp</code> — UTC epoch milliseconds of the reading</li>
+          <li><code>speed_kmh</code> — current speed in km/h (if available from sensor)</li>
+          <li><code>heading</code> — direction of travel in degrees (optional but useful)</li>
+        </ul>
+        <p><strong>Expected frequency:</strong> Every 5–10 seconds per bus. We will buffer these in Kafka and process the stream via Apache Flink at the edge before storage.</p>
+        <p><strong>Bypass path:</strong> Raw GPS pings can also be forwarded directly to Group 3 (frontend/display) for live map rendering — they do not need to wait for our ETA model for that. Our pipeline handles the intelligence layer on top.</p>
+        <p><strong>Static reference data (one-time or daily refresh)</strong></p>
+        <ul>
+          <li>List of all bus stops: <code>stop_id</code>, <code>stop_name</code>, <code>latitude</code>, <code>longitude</code></li>
+          <li>Route definitions: ordered sequence of stops per route with distance between each consecutive stop (in metres) — we need this as a staircase of distances, e.g. Stop A → Stop B = 320 m, Stop B → Stop C = 540 m</li>
+          <li>Scheduled timetables: expected arrival time per stop per route (GTFS format preferred)</li>
+        </ul>
+        <p><strong>Nice to have from Group 1:</strong> Passenger count per bus if sensors support it — useful as a dwell-time feature for our model.</p>
+        <p style="color:#4ade80; font-weight:bold;">Action: Send this list to Group 1 and get written confirmation of format and frequency before we start building the ingestion pipeline.</p>
+      </div>
+    </div>
+
+    <div class="accordion-item">
+      <div class="accordion-header" onclick="toggleAccordion('desc-req2')">2. What We Will Give to Group 3 (Frontend / App Team) <span>+</span></div>
+      <div class="accordion-content" id="desc-req2">
+        <p><strong>Our prediction API will expose an endpoint that Group 3 can call. Here is the agreed contract we need to confirm with them:</strong></p>
+        <p><strong>Basic Level — ETA for major stops only</strong><br>First version of the model. Covers main stops on each route.</p>
+        <p>Request (GET):</p>
+        <pre style="background:#111; padding:0.7rem 1rem; border-radius:6px; font-size:0.85rem; color:#86efac; overflow-x:auto;">/api/eta?route_id=138&amp;bus_id=BUS042&amp;from_stop=Pettah&amp;to_stop=Nugegoda</pre>
+        <p>Response (JSON):</p>
+        <pre style="background:#111; padding:0.7rem 1rem; border-radius:6px; font-size:0.85rem; color:#86efac; overflow-x:auto;">{
+  "bus_id": "BUS042",
+  "route_id": "138",
+  "stop_id": "Nugegoda",
+  "eta_minutes": 7,
+  "confidence": "medium",
+  "last_known_position": { "lat": 6.8975, "lng": 79.8554 },
+  "timestamp": "2025-04-05T13:00:00Z"
+}</pre>
+        <p><strong>Fine-tuned Level — ETA for any stop on the route</strong><br>Once our model is trained with enough data, we extend predictions to every stop — not just major ones. Same API, same format.</p>
+        <p><strong>Google Maps API usage:</strong> We will use the Google Maps Distance Matrix / Roads API to get accurate road distances between stops (to fill gaps where Group 1 cannot provide exact distances) and for map snapping of GPS coordinates to the nearest road.</p>
+        <p><strong>Model input summary:</strong></p>
+        <ul>
+          <li>Current GPS position of the bus</li>
+          <li>Distance from current position to each upcoming stop (staircase from route definition)</li>
+          <li>Time of day, day of week, is rush hour</li>
+          <li>Current speed and heading</li>
+          <li>Historical average delay for this route at this time</li>
+        </ul>
+        <p style="color:#4ade80; font-weight:bold;">Action: Send this API spec to Group 3 and confirm the fields they need before we finalise the model output layer.</p>
+      </div>
+    </div>
+
+    <div class="accordion-item">
+      <div class="accordion-header" onclick="toggleAccordion('desc-1')">3. Data Ingestion &amp; Storage <span>+</span></div>
+      <div class="accordion-content" id="desc-1">
+        <strong>What this means:</strong> We set up systems that collect raw data — like live GPS locations from buses and timetable schedules — and store them securely in databases. Think of it as building the plumbing that brings water into the house. Nothing else can work until this is in place.
+      </div>
+    </div>
+
+    <div class="accordion-item">
+      <div class="accordion-header" onclick="toggleAccordion('desc-2')">4. Stream &amp; Batch Processing <span>+</span></div>
+      <div class="accordion-content" id="desc-2">
+        <strong>What this means:</strong> Handling data in two ways. "Stream" processing deals with live data the moment it arrives — updating a map in real time. "Batch" processing analyzes large amounts of old data at once, like running a nightly report to find recurring traffic patterns.
+      </div>
+    </div>
+
+    <div class="accordion-item">
+      <div class="accordion-header" onclick="toggleAccordion('desc-3')">5. AI/ML ETA Models <span>+</span></div>
+      <div class="accordion-content" id="desc-3">
+        <strong>What this means:</strong> Using algorithms to predict exactly when a bus will arrive at a stop. The model learns from historical patterns — traffic, time of day, weather — to give commuters a reliable Estimated Time of Arrival (ETA). This is our most important deliverable.
+      </div>
+    </div>
+
+    <div class="accordion-item">
+      <div class="accordion-header" onclick="toggleAccordion('desc-4')">6. Prediction API &amp; Analytics <span>+</span></div>
+      <div class="accordion-content" id="desc-4">
+        <strong>What this means:</strong> Building a digital interface (an API) that other groups — like the team building the mobile app — can call to get ETA predictions from us. When they ask "when is Bus 47 arriving?", our system answers in under a second.
+      </div>
+    </div>
+
+    <div class="accordion-item">
+      <div class="accordion-header" onclick="toggleAccordion('desc-5')">7. Data Validation &amp; Quality <span>+</span></div>
+      <div class="accordion-content" id="desc-5">
+        <strong>What this means:</strong> Automatic checks that catch corrupt or impossible data before it breaks our models. If a GPS tracker reports a bus in the ocean, or a timestamp jumps backwards in time, these checks flag it so we never train our AI on bad data.
+      </div>
+    </div>
+
+    <div class="accordion-item">
+      <div class="accordion-header" onclick="toggleAccordion('desc-6')">8. Cross-Group Coordination <span>+</span></div>
+      <div class="accordion-content" id="desc-6">
+        <strong>What this means:</strong> Talking with other sub-groups to agree on contracts. We need to know: what format will the hardware/GPS team send us data in, and what format does the frontend team expect us to return predictions in? This prevents integration failures later.
+      </div>
+    </div>
+  </div>
+
+  <!-- TEAM IDEAS -->
+  <div class="ideas-block">
+    <h2>Team Ideas</h2>
+    <p>Everyone can drop their name and idea here during the meeting. Each message is saved separately — no one overwrites anyone else. Refresh to see all ideas.</p>
+    <div class="ideas-input-row">
+      <input type="text" id="idea-name" placeholder="Your name" maxlength="30"/>
+      <input type="text" id="idea-text" placeholder="Your idea or question..." onkeydown="if(event.key==='Enter') sendIdea()"/>
+      <button class="idea-send-btn" onclick="sendIdea()">Send</button>
+    </div>
+    <ul class="ideas-list" id="ideas-list"></ul>
+  </div>
+
+  <!-- RESOURCES -->
+  <div class="resources-block">
+    <h2>Resources — Papers, Guides &amp; Tools</h2>
+    <p>Curated links directly relevant to our 5 task areas. Click any card to open. Share with the team when ready.</p>
+
+    <div class="res-category">
+      <h3>Where to Get Data — Sri Lanka Specific</h3>
+      <div class="res-cards">
+        <a class="res-card" href="https://data.gov.lk/" target="_blank">
+          <div class="rc-type rc-tool">Dataset Portal &middot; Government of Sri Lanka</div>
+          <div class="rc-title">data.gov.lk — Sri Lanka Open Data Portal</div>
+          <div class="rc-desc">Official government open data portal. Search for transport, roads, and bus datasets. Start here — any publicly released NTC or SLTB data will be here.</div>
+        </a>
+        <a class="res-card" href="https://www.mdpi.com/2306-5729/10/8/119" target="_blank">
+          <div class="rc-type rc-paper">Dataset Paper &middot; MDPI 2025</div>
+          <div class="rc-title">From Raw GPS to GTFS: A Real-World Open Dataset for Bus Travel Time (Sri Lanka)</div>
+          <div class="rc-desc">A real GPS-collected bus dataset from Sri Lanka published as open data — includes routes, stop times, and travel time logs. Directly usable for training our ETA model.</div>
+        </a>
+        <a class="res-card" href="https://mobilitydatabase.org/" target="_blank">
+          <div class="rc-type rc-tool">Dataset Portal &middot; Global GTFS Catalog</div>
+          <div class="rc-title">Mobility Database — Global GTFS Feed Catalog</div>
+          <div class="rc-desc">Search for Sri Lanka GTFS feeds (bus schedules, stops, routes in standard format). Over 6000 transit feeds worldwide. Filter by country to find local feeds.</div>
+        </a>
+        <a class="res-card" href="https://dl.lib.uom.lk/items/9e8da31f-79c7-47a6-b96f-aa0ffbd51f36" target="_blank">
+          <div class="rc-type rc-paper">Research &middot; University of Moratuwa</div>
+          <div class="rc-title">Development of GTFS Data for Sri Lanka</div>
+          <div class="rc-desc">Moratuwa University research on building GTFS-format transit data for Sri Lanka. Explains how local bus schedules were digitised — useful background before using the dataset.</div>
+        </a>
+        <a class="res-card" href="https://www.researchgate.net/publication/387256214_Evaluation_of_machine_learning_models_for_bus_travel_time_prediction" target="_blank">
+          <div class="rc-type rc-paper">Research Paper &middot; ResearchGate</div>
+          <div class="rc-title">Evaluation of ML Models for Bus Travel Time — Sri Lanka Context</div>
+          <div class="rc-desc">Evaluates ML models specifically for Sri Lanka's heterogeneous, lane-less traffic. Tells us which models perform best in our exact local conditions.</div>
+        </a>
+        <a class="res-card" href="https://www.researchgate.net/publication/378201695_An_Improved_Bus_Travel_Time_Prediction_Using_Multi-Model_Ensemble_Approach_for_Heterogeneous_Traffic_Conditions" target="_blank">
+          <div class="rc-type rc-paper">Research Paper &middot; ResearchGate</div>
+          <div class="rc-title">Improved Bus Travel Time Prediction — Heterogeneous Traffic (Sri Lanka)</div>
+          <div class="rc-desc">Uses an ensemble approach for Sri Lanka's mixed traffic. Notes that dwell times vary significantly spatially and temporally — key insight for our feature engineering.</div>
+        </a>
+        <a class="res-card" href="https://gtfs.org/resources/data/" target="_blank">
+          <div class="rc-type rc-tool">Resource &middot; GTFS.org</div>
+          <div class="rc-title">GTFS Data Resources — Global Index</div>
+          <div class="rc-desc">Central index of GTFS datasets worldwide. Use this if Mobility Database doesn't have a specific Sri Lanka feed — links to all known GTFS sources globally.</div>
+        </a>
+        <a class="res-card" href="https://download.geofabrik.de/asia/sri-lanka.html" target="_blank">
+          <div class="rc-type rc-tool">Dataset &middot; Geofabrik / OpenStreetMap</div>
+          <div class="rc-title">OpenStreetMap — Sri Lanka Road &amp; Route Data</div>
+          <div class="rc-desc">Free download of all Sri Lanka roads, stops, and route geometry from OpenStreetMap. Useful for building route features and maps for our model.</div>
+        </a>
+      </div>
+    </div>
+
+    <div class="res-category">
+      <h3>How to Get Data and Train the Model — Step by Step</h3>
+      <div class="res-cards" style="grid-template-columns: 1fr;">
+        <div class="res-card" style="border-color: #2d5a3d; cursor:default;">
+          <div class="rc-type rc-tool">Our Plan — Plain English</div>
+          <div class="rc-title" style="font-size:1rem; margin-bottom:0.6rem;">How G2 Will Get Data and Build the ETA Model</div>
+          <div class="rc-desc" style="font-size:0.9rem; color:#ccc; line-height:1.8;">
+            <strong style="color:#4ade80;">Step 1 — Get the data.</strong> Download the open GPS dataset from the MDPI paper above (real Sri Lanka bus data). Also check data.gov.lk for any NTC/SLTB published datasets. If both are limited, we simulate data using GTFS schedules + add noise to represent real delays.<br><br>
+            <strong style="color:#4ade80;">Step 2 — Understand what's in it.</strong> A bus dataset typically has: timestamp, bus ID, GPS coordinates (lat/lng), route number, stop name, actual arrival time, scheduled arrival time. We use the difference between actual and scheduled as our prediction target (the "delay").<br><br>
+            <strong style="color:#4ade80;">Step 3 — Clean and prepare it.</strong> Remove rows where GPS is clearly wrong (bus in ocean, impossible speed). Fill missing values. Convert timestamps to useful features: hour of day, day of week, is it rush hour, is it a weekday. This is Phase 2 of our plan.<br><br>
+            <strong style="color:#4ade80;">Step 4 — Train the model.</strong> Feed the clean data into scikit-learn. Try a simple model first (Random Forest or Gradient Boosting). The model learns: "given this route, this time of day, this current delay — what will the arrival delay be?" Log every experiment in MLflow.<br><br>
+            <strong style="color:#4ade80;">Step 5 — Test it.</strong> Split data: 80% for training, 20% for testing. Measure Mean Absolute Error (MAE) — how many minutes off is our prediction on average? A good starting target is under 3 minutes MAE for Sri Lanka city conditions.<br><br>
+            <strong style="color:#4ade80;">Step 6 — Serve it.</strong> Once the model is good enough, wrap it in a FastAPI endpoint. Other groups call it with a route number and current time and get back a predicted arrival time.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="res-category">
+      <h3>Research Papers — Bus ETA &amp; Prediction</h3>
+      <div class="res-cards">
+        <a class="res-card" href="https://arxiv.org/abs/2303.15495" target="_blank">
+          <div class="rc-type rc-paper">Research Paper &middot; arXiv 2023</div>
+          <div class="rc-title">Real-Time Bus Arrival Prediction: A Deep Learning Approach</div>
+          <div class="rc-desc">Uses LSTM + diverse data sources for real-time ETA. Directly matches our Phase 3 task. Free to read on arXiv.</div>
+        </a>
+        <a class="res-card" href="https://www.researchgate.net/publication/397281321_Bus_Arrival_Time_Prediction_Using_Machine_Learning_Approaches" target="_blank">
+          <div class="rc-type rc-paper">Research Paper &middot; ResearchGate</div>
+          <div class="rc-title">Bus Arrival Time Prediction Using ML Approaches</div>
+          <div class="rc-desc">Compares parametric vs. non-parametric models for bus arrival. Great starting point for choosing our model type.</div>
+        </a>
+        <a class="res-card" href="https://www.mdpi.com/2079-9292/11/12/1875" target="_blank">
+          <div class="rc-type rc-paper">Research Paper &middot; MDPI 2022</div>
+          <div class="rc-title">Novel Bus Arrival Prediction Based on Spatio-Temporal Dynamics</div>
+          <div class="rc-desc">Introduces Bus Flow Centrality Analysis (BFC) for extracting spatial patterns. Useful for advanced feature engineering.</div>
+        </a>
+        <a class="res-card" href="https://wires.onlinelibrary.wiley.com/doi/10.1002/widm.1457" target="_blank">
+          <div class="rc-type rc-paper">Review Paper &middot; Wiley WIREs</div>
+          <div class="rc-title">Review: Bus Arrival Time Prediction Using AI</div>
+          <div class="rc-desc">Comprehensive review of all major AI/ML approaches for bus prediction. Read this first to understand the landscape before choosing a method.</div>
+        </a>
+        <a class="res-card" href="https://www.sciencedirect.com/science/article/abs/pii/S0263224122006364" target="_blank">
+          <div class="rc-type rc-paper">Research Paper &middot; ScienceDirect 2022</div>
+          <div class="rc-title">Predicting Bus Travel Time Using ML with Weather &amp; Traffic</div>
+          <div class="rc-desc">Includes weather and traffic as features — directly relevant to our innovation ideas around weather integration.</div>
+        </a>
+      </div>
+    </div>
+
+    <div class="res-category">
+      <h3>Data Ingestion &amp; Streaming — Task 1 &amp; 2</h3>
+      <div class="res-cards">
+        <a class="res-card" href="https://docs.confluent.io/kafka/introduction.html" target="_blank">
+          <div class="rc-type rc-docs">Official Docs &middot; Confluent</div>
+          <div class="rc-title">Introduction to Apache Kafka</div>
+          <div class="rc-desc">The definitive guide to Kafka — what it is, how it works, and when to use it. Start here before writing any pipeline code.</div>
+        </a>
+        <a class="res-card" href="https://spark.apache.org/docs/latest/structured-streaming-programming-guide.html" target="_blank">
+          <div class="rc-type rc-docs">Official Docs &middot; Apache Spark</div>
+          <div class="rc-title">Structured Streaming Programming Guide</div>
+          <div class="rc-desc">Official Spark guide for both stream and batch processing. The go-to reference for our Task 2 pipeline work.</div>
+        </a>
+        <a class="res-card" href="https://hevodata.com/learn/kafka-for-data-ingestion/" target="_blank">
+          <div class="rc-type rc-guide">Guide &middot; Hevo</div>
+          <div class="rc-title">Kafka for Data Ingestion — Simplified 101</div>
+          <div class="rc-desc">Plain-English explainer of how Kafka handles data ingestion. Good for team members new to streaming systems.</div>
+        </a>
+      </div>
+    </div>
+
+    <div class="res-category">
+      <h3>ML Model Training &amp; Tracking — Task 3</h3>
+      <div class="res-cards">
+        <a class="res-card" href="https://scikit-learn.org/stable/tutorial/basic/tutorial.html" target="_blank">
+          <div class="rc-type rc-docs">Official Docs &middot; scikit-learn</div>
+          <div class="rc-title">Introduction to Machine Learning with scikit-learn</div>
+          <div class="rc-desc">Start here if new to ML. Covers training, testing, and evaluating models in Python. The fastest way to get a working baseline model.</div>
+        </a>
+        <a class="res-card" href="https://mlflow.org/docs/latest/ml/tracking/" target="_blank">
+          <div class="rc-type rc-docs">Official Docs &middot; MLflow</div>
+          <div class="rc-title">MLflow Experiment Tracking</div>
+          <div class="rc-desc">Track every training run, log metrics, compare models. Essential for proving our model improves over time — makes our work look professional.</div>
+        </a>
+        <a class="res-card" href="https://www.kdnuggets.com/mlflow-mastery-a-complete-guide-to-experiment-tracking-and-model-management" target="_blank">
+          <div class="rc-type rc-guide">Guide &middot; KDnuggets</div>
+          <div class="rc-title">MLflow Mastery — Complete Guide</div>
+          <div class="rc-desc">Practical walkthrough of MLflow for experiment tracking, versioning, and model registry. Real examples with code.</div>
+        </a>
+      </div>
+    </div>
+
+    <div class="res-category">
+      <h3>API Serving &amp; Deployment — Task 4</h3>
+      <div class="res-cards">
+        <a class="res-card" href="https://machinelearningmastery.com/step-by-step-guide-to-deploying-machine-learning-models-with-fastapi-and-docker/" target="_blank">
+          <div class="rc-type rc-guide">Guide &middot; ML Mastery</div>
+          <div class="rc-title">Deploy ML Models with FastAPI + Docker — Step by Step</div>
+          <div class="rc-desc">Takes a trained model all the way to a containerised, production-ready API. Exactly what we need for Phase 4.</div>
+        </a>
+        <a class="res-card" href="https://www.analyticsvidhya.com/blog/2025/12/fastapi-machine-learning-deployment/" target="_blank">
+          <div class="rc-type rc-guide">Guide &middot; Analytics Vidhya</div>
+          <div class="rc-title">Building &amp; Deploying an ML Model Using FastAPI</div>
+          <div class="rc-desc">End-to-end walkthrough with code. Good companion to the ML Mastery guide above — read both before starting Task 4.</div>
+        </a>
+        <a class="res-card" href="https://www.geeksforgeeks.org/machine-learning/deploying-ml-models-as-api-using-fastapi/" target="_blank">
+          <div class="rc-type rc-guide">Guide &middot; GeeksforGeeks</div>
+          <div class="rc-title">Deploying ML Models as API Using FastAPI</div>
+          <div class="rc-desc">Shorter, beginner-friendly version. Good first read before the more detailed guides above.</div>
+        </a>
+      </div>
+    </div>
+
+    <div class="res-category">
+      <h3>Data Validation — Task 5</h3>
+      <div class="res-cards">
+        <a class="res-card" href="https://www.datacamp.com/tutorial/great-expectations-tutorial" target="_blank">
+          <div class="rc-type rc-guide">Guide &middot; DataCamp</div>
+          <div class="rc-title">Great Expectations Tutorial — Validating Data with Python</div>
+          <div class="rc-desc">Practical tutorial covering setup, writing expectations, and running validations in a pipeline. Start here for Task 5.</div>
+        </a>
+        <a class="res-card" href="https://towardsdatascience.com/getting-started-with-great-expectations-a-guide-to-data-validation-in-python-95a8ffc2b747/" target="_blank">
+          <div class="rc-type rc-guide">Guide &middot; Towards Data Science</div>
+          <div class="rc-title">Getting Started with Great Expectations</div>
+          <div class="rc-desc">Covers data profiling, automated testing, and documentation generation. Helps us prove data quality at every pipeline stage.</div>
+        </a>
+      </div>
+    </div>
+
+    <div class="res-category">
+      <h3>Key Tool Sites — Bookmark These</h3>
+      <div class="res-cards">
+        <a class="res-card" href="https://kafka.apache.org/" target="_blank">
+          <div class="rc-type rc-tool">Tool Site</div>
+          <div class="rc-title">Apache Kafka — Official Site</div>
+          <div class="rc-desc">Downloads, docs, quickstart, and community. The source of truth for all things Kafka.</div>
+        </a>
+        <a class="res-card" href="https://spark.apache.org/" target="_blank">
+          <div class="rc-type rc-tool">Tool Site</div>
+          <div class="rc-title">Apache Spark — Official Site</div>
+          <div class="rc-desc">Official Spark site with docs for all versions. Use for both batch and streaming processing.</div>
+        </a>
+        <a class="res-card" href="https://fastapi.tiangolo.com/" target="_blank">
+          <div class="rc-type rc-tool">Tool Site</div>
+          <div class="rc-title">FastAPI — Official Documentation</div>
+          <div class="rc-desc">Interactive docs, tutorials, and full reference. FastAPI auto-generates a live API testing UI — great for demos.</div>
+        </a>
+        <a class="res-card" href="https://mlflow.org/" target="_blank">
+          <div class="rc-type rc-tool">Tool Site</div>
+          <div class="rc-title">MLflow — Official Site</div>
+          <div class="rc-desc">Open-source platform for ML experiment tracking, model registry, and deployment. Free and widely used in industry.</div>
+        </a>
+        <a class="res-card" href="https://greatexpectations.io/" target="_blank">
+          <div class="rc-type rc-tool">Tool Site</div>
+          <div class="rc-title">Great Expectations — Official Site</div>
+          <div class="rc-desc">The leading open-source data validation tool for Python pipelines. Generates human-readable validation reports automatically.</div>
+        </a>
+        <a class="res-card" href="https://scikit-learn.org/stable/" target="_blank">
+          <div class="rc-type rc-tool">Tool Site</div>
+          <div class="rc-title">scikit-learn — Official Documentation</div>
+          <div class="rc-desc">Full reference for every ML algorithm, preprocessing method, and evaluation metric available in scikit-learn.</div>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- MINUTES OF MEETING -->
+  <div class="mom-block">
+    <h2>Minutes of Meeting</h2>
+    <p>Add key decisions and action items as the discussion happens. Saved locally on your device.</p>
+    <div class="mom-input-row">
+      <input type="text" id="mom-input" placeholder="Type a decision, action item, or key point..." onkeydown="if(event.key==='Enter') addMOM()"/>
+      <button class="mom-add-btn" onclick="addMOM()">+ Add</button>
+    </div>
+    <ul class="mom-list" id="mom-list"></ul>
+  </div>
+
+</div>
+
+<script>
+  // ── Accordion (task descriptions) ──
+  function toggleAccordion(id) {
+    const content = document.getElementById(id);
+    const span = content.previousElementSibling.querySelector('span');
+    const isOpen = content.classList.contains('active');
+    content.classList.toggle('active', !isOpen);
+    span.textContent = isOpen ? '+' : '-';
+  }
+
+
+  // ── Team Ideas (Gun.js) ──
+  const gun = Gun(['https://gun-manhattan.herokuapp.com/gun', 'https://relay.peer.ooo/gun']);
+  const ideasFeed = gun.get('g2-ideas-feed-v2');
+  const rendered = new Set();
+
+  const savedName = localStorage.getItem('g2-idea-name');
+  if (savedName) document.getElementById('idea-name').value = savedName;
+
+  function sendIdea() {
+    const nameEl = document.getElementById('idea-name');
+    const textEl = document.getElementById('idea-text');
+    const name = nameEl.value.trim() || 'Anonymous';
+    const text = textEl.value.trim();
+    if (!text) { textEl.focus(); return; }
+    const id = Date.now() + '-' + Math.random().toString(36).slice(2, 6);
+    ideasFeed.get(id).put({ name, text, ts: Date.now() });
+    localStorage.setItem('g2-idea-name', name);
+    textEl.value = '';
+    textEl.focus();
+  }
+
+  ideasFeed.map().on((msg, id) => {
+    if (!msg || !msg.text || rendered.has(id)) return;
+    rendered.add(id);
+    const li = document.createElement('li');
+    li.innerHTML = '<div class="i-name">' + escHtml(msg.name || 'Anonymous') + '</div><div class="i-text">' + escHtml(msg.text) + '</div>';
+    document.getElementById('ideas-list').appendChild(li);
+  });
+
+  // ── Minutes of Meeting ──
+  const MOM_KEY = 'g2-mom-items';
+
+  function loadMOM() {
+    const list = document.getElementById('mom-list');
+    list.innerHTML = '';
+    const items = JSON.parse(localStorage.getItem(MOM_KEY) || '[]');
+    items.forEach((text, i) => appendMOMItem(text, i));
+  }
+
+  function appendMOMItem(text, index) {
+    const list = document.getElementById('mom-list');
+    const li = document.createElement('li');
+    li.innerHTML = '<span>' + escHtml(text) + '</span><button class="mom-del" onclick="deleteMOM(' + index + ')" title="Remove">&#10005;</button>';
+    list.appendChild(li);
+  }
+
+  function addMOM() {
+    const input = document.getElementById('mom-input');
+    const text = input.value.trim();
+    if (!text) { input.focus(); return; }
+    const items = JSON.parse(localStorage.getItem(MOM_KEY) || '[]');
+    items.push(text);
+    localStorage.setItem(MOM_KEY, JSON.stringify(items));
+    input.value = '';
+    input.focus();
+    loadMOM();
+  }
+
+  function deleteMOM(index) {
+    const items = JSON.parse(localStorage.getItem(MOM_KEY) || '[]');
+    items.splice(index, 1);
+    localStorage.setItem(MOM_KEY, JSON.stringify(items));
+    loadMOM();
+  }
+
+  function escHtml(s) {
+    return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  }
+
+  loadMOM();
+</script>
+</body>
+</html>
